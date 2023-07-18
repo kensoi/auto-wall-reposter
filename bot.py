@@ -1,16 +1,15 @@
 from os import getenv
-from sys import argv
 
 from vkbotkit import Bot
 from vkbotkit.objects import enums
 
 
-async def bot():
+async def bot(debug_mode = False):
     """
     Корень приложения VKBotKit v1.2a4 для работы через сообщество
     """
 
-    if "-d" in argv or getenv('DEBUG_MODE'):
+    if debug_mode:
         token = getenv('DEBUG_TOKEN')
         group_id = int(getenv('DEBUG_ID'))
         log_level = enums.LogLevel.DEBUG

@@ -4,6 +4,7 @@ Copyright 2022 kensoi
 
 import asyncio
 import sys
+from os import getenv
 from dotenv import load_dotenv
 from bot import bot
 
@@ -19,5 +20,10 @@ asyncio.set_event_loop(loop)
 
 if __name__ == "__main__":
     load_dotenv()
-    keep_alive()
-    loop.run_until_complete(bot())
+
+    debug_mode = "-d" in sys.argv or getenv('DEBUG_MODE') == "True"
+
+    if not debug_mode:
+        keep_alive()
+
+    loop.run_until_complete(bot(debug_mode))
