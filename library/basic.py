@@ -11,8 +11,7 @@ class Hello:
     condition = IsCommand({"старт",}) | IsThatText({"Начать", "начать"}) | ChatInviteUser()
     message = """
 Привет, пользователь! Мы рады вашему вступлению! 
-Чтобы получить список правил, отправьте команду "@miuruwa правила" или найдите последнее сообщение по тегу #правила.
-Чтобы получить список команд в ЛС, напишите "@miuruwa команды"
+Чтобы получить список команд для бота, напишите "{bot_mention} команды"
 """
 
 class Rules:
@@ -57,7 +56,10 @@ class Main(Library):
 
     @callback(Hello.condition)
     async def send_hello(self, toolkit, package):
-        await toolkit.messages.send(package, Hello.message)
+        bot_mention = await toolkit.get_my_mention()
+        await toolkit.messages.send(package, Hello.message.format(
+            bot_mention = repr(bot_mention)
+        ))
 
 
     @callback(Rules.condition)
