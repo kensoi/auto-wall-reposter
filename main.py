@@ -6,13 +6,13 @@ import asyncio
 import sys
 from os import getenv
 from dotenv import load_dotenv
-from bot import bot
 
 if "vkbotkit" not in sys.modules:
     import pip
     pip.main(["install", "-r", "requirements.txt"])
 
 from background import keep_alive
+from bot import bot
 
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
