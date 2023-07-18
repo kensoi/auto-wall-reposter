@@ -6,8 +6,8 @@ import asyncio
 import sys
 from os import getenv
 from dotenv import load_dotenv
+from utils.background import keep_alive
 load_dotenv()
-
 
 debug_mode = "-d" in sys.argv or getenv('DEBUG_MODE') == "True"
 
@@ -18,7 +18,6 @@ if not debug_mode:
         
     keep_alive()
 
-from utils.background import keep_alive
 from bot import bot
 
 loop = asyncio.new_event_loop()
