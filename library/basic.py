@@ -57,7 +57,7 @@ class Main(Library):
     async def send_hello(self, toolkit, package):
         bot_mention = await toolkit.get_my_mention()
         await toolkit.messages.send(package, Hello.message.format(
-            bot_mention = bot_mention
+            bot_mention = repr(bot_mention)
         ))
 
 
@@ -70,7 +70,7 @@ class Main(Library):
     async def send_commands(self, toolkit, package):
         bot_mention = await toolkit.get_my_mention()
         await toolkit.messages.send(package, Commands.message.format(
-            bot_mention = bot_mention
+            bot_mention = repr(bot_mention)
         ))
         
     @callback(End.condition)

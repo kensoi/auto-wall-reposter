@@ -25,7 +25,7 @@ KICK_FINISH = """
 Пользователи исключены.
 """
 KICK_EXCEPT_NO_USER = """
-Нет выделенных пользователей. Для выделения пользователей отправьте команду "@canarybot кик" со списком упоминаний в любой форме, списком пересланных сообщений или ответом на сообщение.
+Нет выделенных пользователей. Для выделения пользователей отправьте команду "{bot_mention} кик" со списком упоминаний в любой форме, списком пересланных сообщений или ответом на сообщение.
 """
 KICK_EXCEPT_ADMIN = """
 Невозможно исключить {}: пользователь имеет права администратора.
@@ -87,7 +87,11 @@ class Main(Library):
             user_map.append(package.reply_message.from_id)
 
         if len(user_map) == 0:
-            await toolkit.messages.send(package, KICK_EXCEPT_NO_USER)
+            bot_mention = await toolkit.get_my_mention()
+
+            await toolkit.messages.send(package, KICK_EXCEPT_NO_USER.format(
+                bot_mention = repr(bot_mention)
+            ))
 
         else:
             user_list = await toolkit.get_chat_members(package.peer_id)

@@ -6,7 +6,7 @@ from vkbotkit.objects import enums
 
 async def bot(debug_mode = False):
     """
-    Корень приложения VKBotKit v1.2a4 для работы через сообщество
+    Корень приложения VKBotKit v1.2a8 для работы через сообщество
     """
 
     if debug_mode:
