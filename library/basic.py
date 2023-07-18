@@ -1,6 +1,7 @@
 """
 Copyright 2022 kensoi
 """
+from os import getenv
 
 from vkbotkit.objects import callback, Library
 from vkbotkit.objects.filters.actions import ChatInviteUser
@@ -23,9 +24,9 @@ class Help:
 """
 
 class Admin:
-    condition = IsCommand({"админы",}) | IsThatText({"Кто админ", "кто админ", "Кто админ?", "кто админ?"})
+    condition = IsCommand({"бот-админы",}) | IsThatText({"Кто админ бота", "кто админ бота", "Кто админ бота?", "кто админ бота?"})
     message = """
-Пользователь, всем в беседе заведует [id517114114|Андрей Прокофьев]
+Пользователь, ботом руководит [id{bot_admin_id}|{bot_admin_name}]
 """
 
 class End:
@@ -55,14 +56,20 @@ class Main(Library):
         await toolkit.messages.send(package, Help.message)
 
         
-    @callback(Admin.condition)
-    async def send_admin_list(self, toolkit, package):
-        await toolkit.messages.send(package, Admin.message)
+    # @callback(Admin.condition)
+    # async def send_admin_list(self, toolkit, package):
+    #     bot_admin_id = getenv("BOT_ADMIN_ID")
+    #     bot_admin_name = await toolkit.create_mention(mention_id = bot_admin_id)
+
+    #     await toolkit.messages.send(package, Admin.message.format(
+    #         bot_admin_id = bot_admin_id,
+    #         bot_admin_name = bot_admin_name
+    #     ))
 
         
     @callback(End.condition)
     async def end_bot(self, toolkit, package):
-        if package.from_id == 517114114:
+        if package.from_id == int(getenv("BOT_ADMIN_ID")):
             await toolkit.messages.send(package, End.messages.ok)
 
             quit()
