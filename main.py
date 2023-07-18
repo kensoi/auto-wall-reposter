@@ -16,7 +16,7 @@ if not debug_mode:
         import pip
         pip.main(["install", "-r", "requirements.txt"])
         
-    keep_alive()
+    keep_alive(debug_mode)
 
 from bot import bot
 
@@ -24,5 +24,7 @@ loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
 
 if __name__ == "__main__":
-
-    loop.run_until_complete(bot(debug_mode))
+    try:
+        loop.run_until_complete(bot(debug_mode))
+    except KeyboardInterrupt:
+        loop.close()
