@@ -1,21 +1,11 @@
-"""
-Copyright 2022 kensoi
-"""
-
-import asyncio
 from os import getenv
 from sys import argv
 
-from dotenv import load_dotenv
 from vkbotkit import Bot
 from vkbotkit.objects import enums
 
 
-loop = asyncio.new_event_loop()
-asyncio.set_event_loop(loop)
-
-
-async def main():
+async def bot():
     """
     Корень приложения VKBotKit v1.2a4 для работы через сообщество
     """
@@ -39,8 +29,3 @@ async def main():
 
     # START POLLING
     await bot.start_polling()
-
-
-if __name__ == "__main__":
-    load_dotenv()
-    loop.run_until_complete(main())
