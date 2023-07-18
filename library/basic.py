@@ -10,17 +10,26 @@ from vkbotkit.objects.filters.message import IsThatText, IsCommand
 class Hello:
     condition = IsCommand({"старт",}) | IsThatText({"Начать", "начать"}) | ChatInviteUser()
     message = """
-Привет, пользователь!
-
-Мы рады вашему вступлению! На сей раз правил нет, но в будущем они могут появиться! Следите за тегом #правила в этой беседе, чтобы узнать больше.
+Привет, пользователь! Мы рады вашему вступлению! 
+Чтобы получить список правил, отправьте команду "@miuruwa правила" или найдите последнее сообщение по тегу #правила.
+Чтобы получить список команд в ЛС, напишите "@miuruwa команды"
 """
 
-class Help:
-    condition = IsCommand({"помощь",}) | IsThatText({"Помощь", "помощь"})
+class Rules:
+    condition = IsCommand({"правила",})
     message = """
-#помощь
+#правила
+Правила не установлены.
+"""
 
-Правил нет, наслаждайтесь свободой. Пока что.
+class Commands:
+    condition = IsCommand({"команды", "помощь",}) | IsThatText({"Помощь", "помощь"})
+    message = """
+Список команд:
+
+{bot_mention} помощь - вызвать краткую информацию по пользованию чат-ботом
+{bot_mention} команды - получить список команд для чат-бота.
+{bot_mention} правила - получить список правил беседы "Миурува на каждый день"
 """
 
 class Admin:
@@ -51,21 +60,17 @@ class Main(Library):
         await toolkit.messages.send(package, Hello.message)
 
 
-    @callback(Help.condition)
-    async def send_help(self, toolkit, package):
-        await toolkit.messages.send(package, Help.message)
-
+    @callback(Rules.condition)
+    async def send_rules(self, toolkit, package):
+        await toolkit.messages.send(package, Rules.message)
         
-    # @callback(Admin.condition)
-    # async def send_admin_list(self, toolkit, package):
-    #     bot_admin_id = getenv("BOT_ADMIN_ID")
-    #     bot_admin_name = await toolkit.create_mention(mention_id = bot_admin_id)
 
-    #     await toolkit.messages.send(package, Admin.message.format(
-    #         bot_admin_id = bot_admin_id,
-    #         bot_admin_name = bot_admin_name
-    #     ))
-
+    @callback(Commands.condition)
+    async def send_commands(self, toolkit, package):
+        bot_mention = await toolkit.get_my_mention()
+        await toolkit.messages.send(package, Commands.message.format(
+            bot_mention = repr(bot_mention)
+        ))
         
     @callback(End.condition)
     async def end_bot(self, toolkit, package):
