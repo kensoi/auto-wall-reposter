@@ -6,25 +6,25 @@ import asyncio
 import sys
 from os import getenv
 from dotenv import load_dotenv
-from utils.background import keep_alive
-load_dotenv()
+from utils.replit_patch import replit_patch
 
-debug_mode = "-d" in sys.argv or getenv('DEBUG_MODE') == "True"
-
-if not debug_mode:
-    if "vkbotkit" not in sys.modules:
-        import pip
-        pip.main(["install", "-r", "requirements.txt"])
-        
-    keep_alive(debug_mode)
-
-from bot import bot
+# asyncio
 
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
 
+# load environment values and patching Repl.It
+
+load_dotenv()
+debug_mode = "-d" in sys.argv or getenv('DEBUG_MODE') == "True"
+replit_patch(debug_mode)
+
 if __name__ == "__main__":
     try:
-        loop.run_until_complete(bot(debug_mode))
+        from utils.bot import bot
+        
+        miuruwa_bot = bot(debug_mode)
+        loop.run_until_complete(miuruwa_bot)
+
     except KeyboardInterrupt:
         loop.close()

@@ -6,7 +6,9 @@ from vkbotkit.objects import enums
 
 async def bot(debug_mode = False):
     """
-    Корень приложения VKBotKit v1.2a8 для работы через сообщество
+    Корень приложения VKBotKit v1.3 для работы через сообщество
+
+    debug_mode: bool - запуск бота с debug токеном
     """
 
     if debug_mode:
@@ -19,9 +21,8 @@ async def bot(debug_mode = False):
         group_id = int(getenv('PUBLIC_ID'))
         log_level = enums.LogLevel.INFO
 
-    config_log = list(getenv("CONFIG_LOG", default = ""))
-    log_to_file = "f" in config_log # вывод лога в специальный файл
-    log_to_console = "c" in config_log # вывод лога в консоль
+    log_to_file = True
+    log_to_console = True
 
     bot = Bot(token, group_id)
     bot.toolkit.configure_logger(log_level, log_to_file, log_to_console)
