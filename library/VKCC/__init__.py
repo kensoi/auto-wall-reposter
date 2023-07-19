@@ -6,7 +6,7 @@ from vkbotkit.objects import Library
 from vkbotkit.objects.callback import callback
 from vkbotkit.objects.enums import NameCases
 
-from .utils import (
+from library.VKCC.utils import (
     SHORTING_START, 
     SHORTING_RESULT,
     SHORTING_TOO_MANY,

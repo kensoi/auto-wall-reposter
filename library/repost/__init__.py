@@ -5,7 +5,7 @@ Copyright 2023 kensoi
 from vkbotkit.objects import callback, Library
 from vkbotkit.utils import gen_random
 
-from .utils import (
+from library.repost.utils import (
     NewPost, 
     get_chat_id,
     get_wall_object

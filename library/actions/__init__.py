@@ -5,7 +5,7 @@ Copyright 2023 kensoi
 from vkbotkit.objects import callback, Library
 from vkbotkit.objects.enums import NameCases
 
-from .utils import (
+from library.actions.utils import (
     NewUser, KickUser,
     reaction_to_new_user, reaction_to_kick
 )

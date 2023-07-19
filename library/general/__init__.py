@@ -7,7 +7,7 @@ from os import getenv
 from vkbotkit.objects import callback, Library
 from vkbotkit.objects.enums import NameCases
 
-from .utils import (
+from library.general.utils import (
     RulesRequest, CommandListRequest, StopBotRequest, 
     reaction_with_rules,
     reaction_with_commands, 

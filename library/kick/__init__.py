@@ -7,14 +7,14 @@ from vkbotkit.objects.callback import callback
 from vkbotkit.objects.mention import Mention
 from vkbotkit.objects.enums import NameCases
 
-from .reactions import (
+from library.kick.reactions import (
     NO_ADMIN_RIGHTS, NO_ADMIN_RIGHTS_AT_USER,
     ONLY_CHAT_COMMAND, KICK_START, KICK_FINISH,
     KICK_EXCEPT_NO_USER, KICK_EXCEPT_ADMIN,
     KICK_EXCEPT_NO_MEMBER
 )
 
-from .filters import (
+from library.kick.filters import (
     RequestFromChat, NoBotAdminRules, RequestFromUser, RequestWithAdminRights
 )
 
