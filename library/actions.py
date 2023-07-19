@@ -4,12 +4,18 @@ Copyright 2023 kensoi
 
 from vkbotkit.objects import callback, Library
 from vkbotkit.objects.enums import NameCases
+from vkbotkit.objects.filters.actions import ChatInviteUser, ChatKickUser
+from vkbotkit.objects.filters.message import IsCommand, IsThatText
 
-from library.actions.utils import (
-    NewUser, KickUser,
-    reaction_to_new_user, reaction_to_kick
-)
+NewUser = IsCommand({"старт",}) | IsThatText({"Начать", "начать"}) | ChatInviteUser()
+KickUser = ChatKickUser()
 
+reaction_to_new_user = """
+Привет, {user_mention}! Мы рады вашему вступлению! 
+Чтобы получить список команд для бота, напишите "{bot_mention} команды"
+"""
+
+reaction_to_kick = """Приносим соболезнования."""
 class Main(Library):
     @callback(NewUser)
     async def chat_invite_user(self, toolkit, package):

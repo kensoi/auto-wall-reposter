@@ -7,16 +7,46 @@ from vkbotkit.objects.callback import callback
 from vkbotkit.objects.mention import Mention
 from vkbotkit.objects.enums import NameCases
 
-from library.kick.reactions import (
-    NO_ADMIN_RIGHTS, NO_ADMIN_RIGHTS_AT_USER,
-    ONLY_CHAT_COMMAND, KICK_START, KICK_FINISH,
-    KICK_EXCEPT_NO_USER, KICK_EXCEPT_ADMIN,
-    KICK_EXCEPT_NO_MEMBER
-)
+from vkbotkit.objects.filters.filter import Negation
+from vkbotkit.objects.filters.message import IsCommand, IsUserAdmin, IsUserChat, IsBotAdmin
 
-from library.kick.filters import (
-    RequestFromChat, NoBotAdminRules, RequestFromUser, RequestWithAdminRights
-)
+
+RequestFromChat = IsCommand({"кик", "исключить", "выкинуть"}) & IsUserChat()
+NoBotAdminRules = IsCommand({"кик", "исключить", "выкинуть"}) & Negation(IsBotAdmin())
+RequestFromUser = IsCommand({"кик", "исключить", "выкинуть"}) & IsBotAdmin() & Negation(IsUserAdmin())
+RequestWithAdminRights = IsCommand({"кик", "исключить", "выкинуть"}) & IsBotAdmin() & IsUserAdmin()
+
+NO_ADMIN_RIGHTS = """
+{user_mention}, у меня нет прав администратора для выполнения этой команды.
+"""
+
+NO_ADMIN_RIGHTS_AT_USER = """
+{user_mention}, у вас нет полномочий в этой беседе для выполнения этой команды.
+"""
+
+ONLY_CHAT_COMMAND = """
+{user_mention}, эта команда предназначена для беседы.
+"""
+
+KICK_START = """
+{user_mention}, исключаю пользователей...
+"""
+
+KICK_FINISH = """
+Пользователи исключены.
+"""
+
+KICK_EXCEPT_NO_USER = """
+Нет выделенных пользователей. Для выделения пользователей отправьте команду "{bot_mention} кик" со списком упоминаний в любой форме, списком пересланных сообщений или ответом на сообщение.
+"""
+
+KICK_EXCEPT_ADMIN = """
+Невозможно исключить {}: пользователь имеет права администратора.
+"""
+
+KICK_EXCEPT_NO_MEMBER = """
+Невозможно исключить {}: не состоит в беседе.
+"""
 
 class Main(Library):
     """

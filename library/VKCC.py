@@ -5,14 +5,22 @@ Copyright 2023 kensoi
 from vkbotkit.objects import Library
 from vkbotkit.objects.callback import callback
 from vkbotkit.objects.enums import NameCases
+from vkbotkit.objects.filters.message import IsCommand
 
-from library.VKCC.utils import (
-    SHORTING_START, 
-    SHORTING_RESULT,
-    SHORTING_TOO_MANY,
-    Request
-)
 
+SHORTING_START = """
+{user_mention}, отправьте в ответ вашу ссылку
+"""
+
+SHORTING_RESULT = """
+{user_mention}, ваша ссылка: {link}
+"""
+
+SHORTING_TOO_MANY = """
+{user_mention}, невозможно сократить ссылку: в ней содержится один или несколько пробелов.
+"""
+
+Request = IsCommand({"сократить", "сократи"})
 
 class Main(Library):
     """
