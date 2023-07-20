@@ -1,6 +1,9 @@
 """
 Copyright 2023 kensoi
 """
+import asyncio
+
+from concurrent.futures import ThreadPoolExecutor
 
 from os import getenv
 from sys import argv
@@ -11,7 +14,6 @@ from vkbotkit.objects.filters.filter import Filter
 from vkbotkit.objects.enums import Events, LogLevel
 
 import tweepy
-from tweepy.errors import TweepyException
 
 class NewPost(Filter):
     async def check(self, _, package):
@@ -39,8 +41,61 @@ def create_client():
         TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET
     )
 
-def tweet(client: tweepy.Client, message: str):
-    client.create_tweet(text=message)
+def create_api():
+    TWITTER_API_KEY = getenv("TWITTER_API_KEY")
+    TWITTER_API_KEY_SECRET = getenv("TWITTER_API_KEY_SECRET")
+    TWITTER_ACCESS_TOKEN = getenv("TWITTER_ACCESS_TOKEN")
+    TWITTER_ACCESS_TOKEN_SECRET = getenv("TWITTER_ACCESS_TOKEN_SECRET")
+
+    auth = tweepy.OAuth1UserHandler(
+        TWITTER_API_KEY, TWITTER_API_KEY_SECRET, 
+        TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET
+    )
+
+    return tweepy.API(auth)
+
+async def tweet(client: tweepy.Client, toolkit, message: str, attachments=None):
+    loop = asyncio.get_event_loop()
+    _executor = ThreadPoolExecutor(10)
+
+    if attachments:
+        await loop.run_in_executor(_executor, lambda _: client.create_tweet(text=message))
+        
+    else:
+        api = await loop.run_in_executor(_executor, lambda _: create_api())
+        session = toolkit._session
+        photo_list = []
+        media_ids = []
+
+        for attachment in attachments:
+            if attachment.type == "photo":
+                max_height = 0
+                url = ""
+                
+                for version in attachment.sizes:
+                    if version.height > max_height:
+                        url = version.url
+                        max_height = version.height
+
+                async with session.get(url) as resp:
+                    photo = await resp.read()
+                    photo_list.append(photo) 
+
+                if len(photo_list) == 4:
+                    break
+        
+        for photo in photo_list:
+            media_id = api.media_upload(file=photo)
+            media_ids.append(media_id)
+            
+        await loop.run_in_executor(
+            _executor, 
+            lambda _: client.create_tweet(
+                text=message,
+                media_ids=media_ids
+            )
+        )
+
 
     print('Tweeted successfully!')
 
@@ -63,7 +118,7 @@ class Main(Library):
             if not self.client:
                 self.client = create_client()
 
-            tweet(self.client, TWEET_TEMPLATE.format(link_to_post=f"vk.com/{wall_id}"))
+            await tweet(self.client, toolkit, package.text, package.attachments)
             toolkit.log(NO_ERRORS, log_level=LogLevel.DEBUG)
 
         except Exception as e:
