@@ -9,4 +9,4 @@ def replit_patch(debug_mode):
             import pip
             pip.main(["install", "-r", "requirements.txt"])
         
-    keep_alive(debug_mode)
+        keep_alive(debug_mode)

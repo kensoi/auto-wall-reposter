@@ -6,11 +6,11 @@ from os import getenv
 
 from vkbotkit.objects import callback, Library
 from vkbotkit.objects.enums import NameCases
-from vkbotkit.objects.filters.message import IsThatText, IsCommand
+from vkbotkit.objects.filters.message import IsCommand
 
 
 RulesRequest = IsCommand({"правила",})
-CommandListRequest = IsCommand({"команды", "помощь",}) | IsThatText({"Помощь", "помощь"})
+CommandListRequest = IsCommand({"команды", "помощь",})
 StopBotRequest = IsCommand({"выход",})
 
 reaction_with_rules = """
@@ -45,7 +45,6 @@ class Main(Library):
             user_mention = repr(user_mention),
             topic_link = getenv("RULES_LINK")
         ))
-        
 
     @callback(CommandListRequest)
     async def send_commands(self, toolkit, package):
