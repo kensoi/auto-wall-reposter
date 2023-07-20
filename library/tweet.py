@@ -59,7 +59,7 @@ async def tweet(client: tweepy.Client, toolkit, message: str, attachments=None):
     _executor = ThreadPoolExecutor(10)
 
     if attachments:
-        api = await loop.run_in_executor(_executor, lambda _: create_api())
+        api = await loop.run_in_executor(_executor, lambda _: create_api(), None)
         session = toolkit._session
         photo_list = []
         media_ids = []
@@ -90,11 +90,11 @@ async def tweet(client: tweepy.Client, toolkit, message: str, attachments=None):
             lambda _: client.create_tweet(
                 text=message,
                 media_ids=media_ids
-            )
+            ), None
         )
 
     else:
-        await loop.run_in_executor(_executor, lambda _: client.create_tweet(text=message))
+        await loop.run_in_executor(_executor, lambda _: client.create_tweet(text=message), None)
 
 TWEET_TEMPLATE = "Новый пост! Ссылка: {link_to_post}"
 
