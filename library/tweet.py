@@ -4,6 +4,7 @@ Copyright 2023 kensoi
 import asyncio
 
 from concurrent.futures import ThreadPoolExecutor
+from io import BytesIO
 
 from os import getenv
 from sys import argv
@@ -82,7 +83,7 @@ async def tweet(client: tweepy.Client, toolkit, message: str, attachments=None):
                     break
         
         for photo in photo_list:
-            media_id = api.media_upload(filename="", file=photo)
+            media_id = api.media_upload(filename=".jpg", file=BytesIO(photo))
             media_ids.append(media_id)
             
         await loop.run_in_executor(
