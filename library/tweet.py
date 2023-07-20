@@ -141,6 +141,7 @@ class Main(Library):
             bot_mention = await toolkit.get_my_mention()
 
             await toolkit.messages.send(package, NO_MESSAGE.format(bot_mention = repr(bot_mention)))
+            return
 
         try:
             if not self.client:
