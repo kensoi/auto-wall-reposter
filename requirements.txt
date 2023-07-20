@@ -2,3 +2,4 @@ https://github.com/kensoi/vkbotkit/tarball/v1.3
 python-dotenv
 flask
 watchdog
+tweepy
