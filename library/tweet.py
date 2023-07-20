@@ -93,7 +93,7 @@ async def tweet(client: tweepy.Client, toolkit, message: str, attachments=None):
         lambda item: item.type == "photo", attachments
     ))
 
-    print([i.url for i in photo_attachments])
+    print(len(photo_attachments))
 
     if len(photo_attachments) == 0:
         await loop.run_in_executor(_executor, lambda _: client.create_tweet(text=message), None)
@@ -105,7 +105,7 @@ async def tweet(client: tweepy.Client, toolkit, message: str, attachments=None):
         upload_photo_on_twitter(photo, toolkit._session) for photo in photo_attachments
     ])
 
-    print(media_ids)
+    print(len(media_ids))
     
     await loop.run_in_executor(
         _executor, 
