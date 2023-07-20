@@ -89,6 +89,10 @@ async def tweet(client: tweepy.Client, toolkit, message: str, attachments=None):
         await loop.run_in_executor(_executor, lambda _: client.create_tweet(text=message), None)
         return
     
+    print(
+        *[i.type for i in attachments]
+    )
+    
     photo_attachments = list(filter(
         lambda item: item.type == "photo", attachments
     ))
