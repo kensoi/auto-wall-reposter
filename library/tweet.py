@@ -17,6 +17,7 @@ from vkbotkit.objects.enums import Events, LogLevel
 
 import tweepy
 
+
 class NewPost(Filter):
     async def check(self, _, package):
         return package.type == Events.WALL_POST_NEW
@@ -56,51 +57,61 @@ def create_api():
 
     return tweepy.API(auth)
 
+_executor = ThreadPoolExecutor(10)
+api = create_api()
+
+async def upload_photo_on_twitter(attachment, loop, session):
+    size_list = list(map(
+            lambda item: {
+                "url": item.url,
+                "height": item.height
+            },
+            attachment.photo.sizes
+        ))
+    size_list.sort(key=lambda item: item["height"])
+    
+    async with session.get(size_list[-1]["url"]) as resp:
+        photo = await resp.read()
+
+    media_object = await loop.run_in_executor(
+        _executor, 
+        lambda _: api.media_upload(filename=".jpg", file=BytesIO(photo)), 
+        None
+    )
+    return media_object.media_id
+
+
 async def tweet(client: tweepy.Client, toolkit, message: str, attachments=None):
     loop = asyncio.get_event_loop()
-    _executor = ThreadPoolExecutor(10)
 
-    if attachments:
-        api = await loop.run_in_executor(_executor, lambda _: create_api(), None)
-        session = toolkit._session
-        photo_list = []
-        media_ids = []
-
-        for attachment in attachments:
-            if attachment.type == "photo":
-                max_height = 0
-                url = ""
-                
-                for version in attachment.photo.sizes:
-                    if version.height > max_height:
-                        url = version.url
-                        max_height = version.height
-
-                async with session.get(url) as resp:
-                    photo = await resp.read()
-                    photo_list.append(photo) 
-
-                if len(photo_list) == 4:
-                    break
-        
-        for photo in photo_list:
-            media_object = await loop.run_in_executor(
-                _executor, 
-                lambda _: api.media_upload(filename=".jpg", file=BytesIO(photo)), 
-                None
-            )
-            media_ids.append(media_object.media_id)
-        
-        await loop.run_in_executor(
-            _executor, 
-            lambda _: client.create_tweet(
-                text=message,
-                media_ids=media_ids
-            ), None
-        )
-
-    else:
+    if not attachments:
         await loop.run_in_executor(_executor, lambda _: client.create_tweet(text=message), None)
+        return
+    
+    photo_attachments = list(filter(
+        lambda item: item.type == "photo", attachments
+    ))
+
+    if len(photo_attachments) == 0:
+        await loop.run_in_executor(_executor, lambda _: client.create_tweet(text=message), None)
+        return
+    
+    photo_attachments[:min(len(photo_attachments),4)]
+    
+    media_ids = await asyncio.gather(*[
+        upload_photo_on_twitter(photo, toolkit._session) for photo in photo_attachments
+    ])
+
+    print(media_ids)
+    
+    await loop.run_in_executor(
+        _executor, 
+        lambda _: client.create_tweet(
+            text=message,
+            media_ids=media_ids
+        ), None
+    )
+
 
 TWEET_TEMPLATE = "Новый пост! Ссылка: {link_to_post}"
 
