@@ -60,7 +60,8 @@ def create_api():
 _executor = ThreadPoolExecutor(10)
 api = create_api()
 
-async def upload_photo_on_twitter(attachment, loop, session):
+async def upload_photo_on_twitter(attachment, session):
+    loop = asyncio.get_event_loop()
     size_list = list(map(
             lambda item: {
                 "url": item.url,
