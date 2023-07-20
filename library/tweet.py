@@ -12,6 +12,7 @@ from sys import argv
 from vkbotkit.objects import callback, Library
 
 from vkbotkit.objects.filters.filter import Filter
+from vkbotkit.objects.filters.message import IsCommand
 from vkbotkit.objects.enums import Events, LogLevel
 
 import tweepy
@@ -105,6 +106,11 @@ TWEET_TEMPLATE = "Новый пост! Ссылка: {link_to_post}"
 
 EXCEPTION_MESSAGE = "Твит не был создан. Причина: {exception}"
 NO_ERRORS="Твит отправлен"
+RIGHTS_ERROR="У вас нет полномочий на эту команду."
+
+NO_MESSAGE="""
+Попробуйте написать "{bot_mention} твитнуть Привет, мир!"
+"""
 
 class Main(Library):
     """
@@ -114,8 +120,6 @@ class Main(Library):
 
     @callback(NewPost())
     async def repost(self, toolkit, package):
-        wall_id = get_wall_object(package)
-
         try:
             if not self.client:
                 self.client = create_client()
@@ -125,3 +129,28 @@ class Main(Library):
 
         except Exception as e:
             toolkit.log(EXCEPTION_MESSAGE.format(exception=e), log_level=LogLevel.ERROR)
+
+
+    @callback(IsCommand({"tweet", "твит", "твитнуть"}))
+    async def tweet(self, toolkit, package):
+        if package.from_id != int(getenv("BOT_ADMIN_ID")):
+            await toolkit.messages.send(package, RIGHTS_ERROR)
+            return
+
+        if len(package.items) == 2:
+            bot_mention = await toolkit.get_my_mention()
+
+            await toolkit.messages.send(package, NO_MESSAGE.format(bot_mention = repr(bot_mention)))
+
+        try:
+            if not self.client:
+                self.client = create_client()
+
+            await tweet(self.client, toolkit, " ".join(package.items[2:]), package.attachments)
+
+            toolkit.log(NO_ERRORS, log_level=LogLevel.DEBUG)
+            await toolkit.messages.send(package, NO_ERRORS)
+
+        except Exception as e:
+            toolkit.log(EXCEPTION_MESSAGE.format(exception=e), log_level=LogLevel.ERROR)
+            await toolkit.messages.send(package, EXCEPTION_MESSAGE.format(exception=e))
