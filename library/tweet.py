@@ -82,7 +82,7 @@ async def tweet(client: tweepy.Client, toolkit, message: str, attachments=None):
                     break
         
         for photo in photo_list:
-            media_id = api.media_upload(file=photo)
+            media_id = api.media_upload(filename="", file=photo)
             media_ids.append(media_id)
             
         await loop.run_in_executor(
