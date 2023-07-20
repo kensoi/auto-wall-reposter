@@ -89,15 +89,9 @@ async def tweet(client: tweepy.Client, toolkit, message: str, attachments=None):
         await loop.run_in_executor(_executor, lambda _: client.create_tweet(text=message), None)
         return
     
-    print(
-        *[i.type for i in attachments]
-    )
-    
     photo_attachments = list(filter(
         lambda item: item.type == "photo", attachments
     ))
-
-    print(len(photo_attachments))
 
     if len(photo_attachments) == 0:
         await loop.run_in_executor(_executor, lambda _: client.create_tweet(text=message), None)
@@ -108,8 +102,6 @@ async def tweet(client: tweepy.Client, toolkit, message: str, attachments=None):
     media_ids = await asyncio.gather(*[
         upload_photo_on_twitter(photo, toolkit._session) for photo in photo_attachments
     ])
-
-    print(len(media_ids))
     
     await loop.run_in_executor(
         _executor, 
@@ -162,6 +154,8 @@ class Main(Library):
             return
 
         try:
+            print(package.attachments)
+
             if not self.client:
                 self.client = create_client()
 
