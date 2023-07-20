@@ -69,7 +69,7 @@ async def tweet(client: tweepy.Client, toolkit, message: str, attachments=None):
                 max_height = 0
                 url = ""
                 
-                for version in attachment.sizes:
+                for version in attachment.photo.sizes:
                     if version.height > max_height:
                         url = version.url
                         max_height = version.height
