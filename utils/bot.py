@@ -26,6 +26,7 @@ async def bot(debug_mode = False):
 
     bot = Bot(token, group_id)
     bot.toolkit.configure_logger(log_level, log_to_file, log_to_console)
+    bot.toolkit.bot_mentions=getenv('BOT_MENTIONS').split(" ")
 
     # START POLLING
     await bot.start_polling()

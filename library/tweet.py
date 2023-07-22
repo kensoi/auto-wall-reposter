@@ -58,6 +58,7 @@ def create_api():
     return tweepy.API(auth)
 
 _executor = ThreadPoolExecutor(10)
+client = create_client()
 api = create_api()
 
 async def upload_photo_on_twitter(attachment, session):
@@ -124,16 +125,14 @@ NO_MESSAGE="""
 
 class Main(Library):
     """
-    Библиотека которая дублирует посты из группы вк как твиты в твиттере
+    Библиотека для создания твитов (посты в твиттере) через ВК команды и сообщения
     """
+
     client=None
 
     @callback(NewPost())
     async def repost(self, toolkit, package):
         try:
-            if not self.client:
-                self.client = create_client()
-
             await tweet(self.client, toolkit, package.text, package.attachments)
             toolkit.log(NO_ERRORS, log_level=LogLevel.DEBUG)
 
@@ -147,15 +146,13 @@ class Main(Library):
             await toolkit.messages.send(package, RIGHTS_ERROR)
             return
 
-        if len(package.items) == 2:
+        elif len(package.items) == 2:
             bot_mention = await toolkit.get_my_mention()
 
             await toolkit.messages.send(package, NO_MESSAGE.format(bot_mention = repr(bot_mention)))
             return
 
         try:
-            print(package.attachments)
-
             if not self.client:
                 self.client = create_client()
 

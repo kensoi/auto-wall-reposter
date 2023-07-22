@@ -7,7 +7,7 @@ from vkbotkit.objects.enums import NameCases
 from vkbotkit.objects.filters.actions import ChatInviteUser, ChatKickUser
 from vkbotkit.objects.filters.message import IsCommand, IsThatText
 
-NewUser = IsCommand({"старт",}) | IsThatText({"Начать", "начать"}) | ChatInviteUser()
+NewUser = IsCommand({"старт",}, only_without_args=True) | IsThatText({"Начать", "начать"}) | ChatInviteUser()
 KickUser = ChatKickUser()
 
 reaction_to_new_user = """
@@ -16,6 +16,7 @@ reaction_to_new_user = """
 """
 
 reaction_to_kick = """Приносим соболезнования."""
+
 class Main(Library):
     @callback(NewUser)
     async def chat_invite_user(self, toolkit, package):

@@ -21,7 +21,7 @@ NO_ADMIN_RIGHTS = """
 """
 
 NO_ADMIN_RIGHTS_AT_USER = """
-{user_mention}, у вас нет полномочий в этой беседе для выполнения этой команды.
+{user_mention}, вам нельзя проворачивать такую аферу.
 """
 
 ONLY_CHAT_COMMAND = """
