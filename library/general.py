@@ -6,7 +6,6 @@ import os
 
 from vkbotkit.objects import callback, Library
 from vkbotkit.objects.enums import NameCases, Events
-from vkbotkit.objects.filters.filter import Filter, Not
 from vkbotkit.objects.filters.message import IsCommand
 from vkbotkit.objects.filters.events import WhichEvent
 
@@ -15,14 +14,8 @@ init = lambda definition: definition()
 
 # Filters
 
-@init
-class isSysAdmin(Filter):
-    async def check(self, _, package):
-        return package.from_id != int(os.environ.get("BOT_ADMIN_ID"))
-    
 RulesRequest = IsCommand({"правила", "rules"}, only_without_args=True)
 CommandListRequest = IsCommand({"команды", "commands"}, only_without_args=True)
-StopBotRequest = IsCommand({"выход", "stop"}, only_without_args=True)
 IsReaction = WhichEvent({Events.MESSAGE_REACTION_EVENT, })
 
 # Message reaction templates
@@ -69,19 +62,6 @@ class Main(Library):
             user_mention = repr(user_mention),
             bot_mention = repr(bot_mention),
             topic_link = os.environ.get("COMMANDS_LINK")
-        ))
-        
-    @callback(StopBotRequest & isSysAdmin)
-    async def end_bot(self, toolkit, package):
-        await toolkit.messages.send(package, STOP_REACTION)
-        quit()
-
-    @callback(StopBotRequest & Not(isSysAdmin))
-    async def end_bot_error(self, toolkit, package):
-        user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
-
-        await toolkit.messages.send(package, ERROR_REACTION.format(
-            user_mention = repr(user_mention),
         ))
 
     @callback(IsReaction)

@@ -105,16 +105,13 @@ async def tweet(toolkit, message: str, attachments=None):
     )
 
 
-# helpful filter
+# Filters
 
 @init
 class isSysAdmin(Filter):
     async def check(self, _, package):
         return package.from_id != int(os.environ.get("BOT_ADMIN_ID"))
-
-
-# Event types
-
+    
 PostToTweet = WhichEvent({Events.WALL_POST_NEW ,})
 MessageToTweet = isSysAdmin & IsCommand({"tweet", "твит", "твитнуть"}, only_with_args=True)
 TweetTrouble = isSysAdmin & IsCommand({"tweet", "твит", "твитнуть"}, only_with_args=False)

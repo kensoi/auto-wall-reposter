@@ -7,8 +7,8 @@ from vkbotkit.objects.enums import NameCases
 from vkbotkit.objects.filters.actions import ChatInviteUser, ChatKickUser
 from vkbotkit.objects.filters.message import IsCommand, IsThatText
 
-NewUser = IsCommand({"старт",}, only_without_args=True) | IsThatText({"Начать", "начать"}) | ChatInviteUser
-KickUser = ChatKickUser
+StartCommand = IsCommand({"старт",}, only_without_args=True)
+StartText = IsThatText({"Начать", "начать"})
 
 REACTION_TO_NEW_USER = """
 Привет, {user_mention}! Мы рады вашему вступлению! 
@@ -18,7 +18,7 @@ REACTION_TO_NEW_USER = """
 REACTION_TO_KICK = """Приносим соболезнования."""
 
 class Main(Library):
-    @callback(NewUser)
+    @callback(StartCommand | StartText | ChatInviteUser)
     async def chat_invite_user(self, toolkit, package):
         bot_mention = await toolkit.get_my_mention()
         user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
@@ -28,6 +28,6 @@ class Main(Library):
             bot_mention = repr(bot_mention)
         ))
     
-    @callback(KickUser)
+    @callback(ChatKickUser)
     async def chat_kick_user(self, toolkit, package):
         await toolkit.messages.send(package, REACTION_TO_KICK)

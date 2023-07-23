@@ -13,11 +13,6 @@ from vkbotkit.objects.filters.message import IsCommand, IsUserAdmin, IsUserChat,
 
 Command = IsCommand({"кик", "исключить", "выкинуть"})
 
-RequestFromChat = Command & IsUserChat
-NoBotAdminRules = Command & Not(IsBotAdmin)
-RequestFromUser = Command & IsBotAdmin & Not(IsUserAdmin)
-RequestWithAdminRights = Command & IsBotAdmin & IsUserAdmin
-
 NO_ADMIN_RIGHTS = """
 {user_mention}, у меня нет прав администратора для выполнения этой команды.
 """
@@ -55,7 +50,7 @@ class Main(Library):
     Kick user via command
     """
 
-    @callback(RequestFromChat)
+    @callback(Command & IsUserChat)
     async def kick_user(self, toolkit, package):
         user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
 
@@ -64,7 +59,7 @@ class Main(Library):
         ))
 
 
-    @callback(NoBotAdminRules)
+    @callback(Command & Not(IsBotAdmin))
     async def kick_no_bot_admin(self, toolkit, package):
         user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
 
@@ -73,7 +68,7 @@ class Main(Library):
         ))
 
 
-    @callback(RequestFromUser)
+    @callback(Command & IsBotAdmin & Not(IsUserAdmin))
     async def kick_no_admin(self, toolkit, package):
         user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
 
@@ -82,7 +77,7 @@ class Main(Library):
         ))
 
 
-    @callback(RequestWithAdminRights)
+    @callback(Command & IsBotAdmin & IsUserAdmin)
     async def kick_admin(self, toolkit, package):
         user_map = package.mentions[1:]
 

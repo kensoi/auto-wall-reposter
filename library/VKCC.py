@@ -29,8 +29,6 @@ SHORTING_TOO_MANY = """
 """
 
 Request = IsCommand({"сократить", "сократи"}, only_with_args=True)
-RequestWithoutLimit = LengthLimit & Request
-RequestWithLimit = Not(LengthLimit) & Request
 RequestWithoutLink = IsCommand({"сократить", "сократи"}, only_with_args=False)
 
 class Main(Library):
@@ -51,7 +49,7 @@ class Main(Library):
                 user_mention = repr(user_mention)
             ))
         
-    @callback(RequestWithLimit)
+    @callback(Not(LengthLimit) & Request)
     async def error_message(self, toolkit, package):
         """
         too many args
@@ -65,7 +63,7 @@ class Main(Library):
 
         await toolkit.messages.send(package, response)
 
-    @callback(RequestWithoutLimit)
+    @callback(LengthLimit & Request)
     async def answer(self, toolkit, package):
         """
         short link
