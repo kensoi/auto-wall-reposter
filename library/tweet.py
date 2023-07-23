@@ -2,41 +2,34 @@
 Copyright 2023 kensoi
 """
 import asyncio
+import os
+import tweepy
 
 from concurrent.futures import ThreadPoolExecutor
 from io import BytesIO
 
-from os import getenv
-from sys import argv
 
 from vkbotkit.objects import callback, Library
 
-from vkbotkit.objects.filters.filter import Filter
+from vkbotkit.objects.filters.filter import Filter, Negation
+from vkbotkit.objects.filters.events import WhichEvent
 from vkbotkit.objects.filters.message import IsCommand
 from vkbotkit.objects.enums import Events, LogLevel
 
-import tweepy
 
+init = lambda definition: definition()
 
-class NewPost(Filter):
-    async def check(self, _, package):
-        return package.type == Events.WALL_POST_NEW
+_executor = ThreadPoolExecutor(10)
 
-def get_wall_object(wall):
-        return f"wall{wall.owner_id}_{wall.id}"
-    
-def get_chat_id():
-    if "-d" in argv or getenv('DEBUG_MODE'):
-        return getenv('DEBUG_CHAT_TO_REPOST')
-    
-    return getenv('CHAT_TO_REPOST')
+# Twitter API
 
-def create_client():
-    TWITTER_API_KEY = getenv("TWITTER_API_KEY")
-    TWITTER_API_KEY_SECRET = getenv("TWITTER_API_KEY_SECRET")
-    TWITTER_BEARER_KEY = getenv("TWITTER_BEARER_TOKEN")
-    TWITTER_ACCESS_TOKEN = getenv("TWITTER_ACCESS_TOKEN")
-    TWITTER_ACCESS_TOKEN_SECRET = getenv("TWITTER_ACCESS_TOKEN_SECRET")
+@init
+def client():
+    TWITTER_API_KEY = os.environ.get("TWITTER_API_KEY")
+    TWITTER_API_KEY_SECRET = os.environ.get("TWITTER_API_KEY_SECRET")
+    TWITTER_BEARER_KEY = os.environ.get("TWITTER_BEARER_TOKEN")
+    TWITTER_ACCESS_TOKEN = os.environ.get("TWITTER_ACCESS_TOKEN")
+    TWITTER_ACCESS_TOKEN_SECRET = os.environ.get("TWITTER_ACCESS_TOKEN_SECRET")
 
     return tweepy.Client(
         TWITTER_BEARER_KEY, 
@@ -44,11 +37,13 @@ def create_client():
         TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET
     )
 
-def create_api():
-    TWITTER_API_KEY = getenv("TWITTER_API_KEY")
-    TWITTER_API_KEY_SECRET = getenv("TWITTER_API_KEY_SECRET")
-    TWITTER_ACCESS_TOKEN = getenv("TWITTER_ACCESS_TOKEN")
-    TWITTER_ACCESS_TOKEN_SECRET = getenv("TWITTER_ACCESS_TOKEN_SECRET")
+
+@init
+def api():
+    TWITTER_API_KEY = os.environ.get("TWITTER_API_KEY")
+    TWITTER_API_KEY_SECRET = os.environ.get("TWITTER_API_KEY_SECRET")
+    TWITTER_ACCESS_TOKEN = os.environ.get("TWITTER_ACCESS_TOKEN")
+    TWITTER_ACCESS_TOKEN_SECRET = os.environ.get("TWITTER_ACCESS_TOKEN_SECRET")
 
     auth = tweepy.OAuth1UserHandler(
         TWITTER_API_KEY, TWITTER_API_KEY_SECRET, 
@@ -57,9 +52,6 @@ def create_api():
 
     return tweepy.API(auth)
 
-_executor = ThreadPoolExecutor(10)
-client = create_client()
-api = create_api()
 
 async def upload_photo_on_twitter(attachment, session):
     loop = asyncio.get_event_loop()
@@ -83,7 +75,7 @@ async def upload_photo_on_twitter(attachment, session):
     return media_object.media_id
 
 
-async def tweet(client: tweepy.Client, toolkit, message: str, attachments=None):
+async def tweet(toolkit, message: str, attachments=None):
     loop = asyncio.get_event_loop()
 
     if not attachments:
@@ -113,6 +105,24 @@ async def tweet(client: tweepy.Client, toolkit, message: str, attachments=None):
     )
 
 
+# helpful filter
+
+@init
+class isSysAdmin(Filter):
+    async def check(self, _, package):
+        return package.from_id != int(os.environ.get("BOT_ADMIN_ID"))
+
+
+# Event types
+
+PostToTweet = WhichEvent(Events.WALL_POST_NEW)
+MessageToTweet = isSysAdmin & IsCommand({"tweet", "твит", "твитнуть"}, only_with_args=True)
+TweetTrouble = isSysAdmin & IsCommand({"tweet", "твит", "твитнуть"}, only_with_args=False)
+NotAdmin = Negation(isSysAdmin) & IsCommand({"tweet", "твит", "твитнуть"})
+
+
+# message templates
+
 TWEET_TEMPLATE = "Новый пост! Ссылка: {link_to_post}"
 
 EXCEPTION_MESSAGE = "Твит не был создан. Причина: {exception}"
@@ -123,40 +133,49 @@ NO_MESSAGE="""
 Попробуйте написать "{bot_mention} твитнуть Привет, мир!"
 """
 
+
 class Main(Library):
     """
-    Библиотека для создания твитов (посты в твиттере) через ВК команды и сообщения
+    Twitter API library for VKBotKit
     """
 
     client=None
 
-    @callback(NewPost())
+    @callback(PostToTweet)
     async def repost(self, toolkit, package):
+        """
+        Tweet with post data (message & photos)
+        """
+        
         try:
-            await tweet(self.client, toolkit, package.text, package.attachments)
+            await tweet(toolkit, package.text, package.attachments)
             toolkit.log(NO_ERRORS, log_level=LogLevel.DEBUG)
 
         except Exception as e:
             toolkit.log(EXCEPTION_MESSAGE.format(exception=e), log_level=LogLevel.ERROR)
 
 
-    @callback(IsCommand({"tweet", "твит", "твитнуть"}))
+    @callback(NotAdmin)
+    async def taboo(self, toolkit, package):
+        await toolkit.messages.send(package, RIGHTS_ERROR)
+
+
+    @callback(TweetTrouble)
+    async def tweet_help(self, toolkit, package):
+        """
+        Send help message to user
+        """
+        
+        bot_mention = await toolkit.get_my_mention()
+
+        await toolkit.messages.send(package, NO_MESSAGE.format(bot_mention = repr(bot_mention)))
+    
+
+    @callback(MessageToTweet)
     async def tweet(self, toolkit, package):
-        if package.from_id != int(getenv("BOT_ADMIN_ID")):
-            await toolkit.messages.send(package, RIGHTS_ERROR)
-            return
-
-        elif len(package.items) == 2:
-            bot_mention = await toolkit.get_my_mention()
-
-            await toolkit.messages.send(package, NO_MESSAGE.format(bot_mention = repr(bot_mention)))
-            return
-
         try:
-            if not self.client:
-                self.client = create_client()
-
-            await tweet(self.client, toolkit, " ".join(package.items[2:]), package.attachments)
+            message_to_tweet = " ".join(package.items[2:])
+            await tweet(toolkit, message_to_tweet, package.attachments)
 
             toolkit.log(NO_ERRORS, log_level=LogLevel.DEBUG)
             await toolkit.messages.send(package, NO_ERRORS)
