@@ -5,58 +5,78 @@ Copyright 2023 kensoi
 from vkbotkit.objects import Library
 from vkbotkit.objects.callback import callback
 from vkbotkit.objects.enums import NameCases
+from vkbotkit.objects.filters.filter import Filter, Negation
 from vkbotkit.objects.filters.message import IsCommand
 
 
-SHORTING_START = """
-{user_mention}, отправьте в ответ вашу ссылку
+class LengthLimit(Filter):
+    async def check(self, _, package):
+        return len(package.items) == 3
+    
+
+SHORTING_NO_ARGS = """
+{user_mention}, отправьте команду с ссылкой без пробелов, например "миурува сократить vk.com".
 """
 
 SHORTING_RESULT = """
-{user_mention}, ваша ссылка: {link}
+{user_mention}, ваша ссылка: {link}.
 """
 
 SHORTING_TOO_MANY = """
 {user_mention}, невозможно сократить ссылку: в ней содержится один или несколько пробелов.
 """
 
-Request = IsCommand({"сократить", "сократи"})
+Request = IsCommand({"сократить", "сократи"}, only_with_args=True)
+RequestWithoutLimit = LengthLimit & Request
+RequestWithLimit = Negation(LengthLimit) & Request
+RequestWithoutLink = IsCommand({"сократить", "сократи"}, only_with_args=False)
 
 class Main(Library):
     """
-    Сокращатель ссылок
+    Get short link by vk.cc
     """
 
-    @callback(Request)
-    async def get_short(self, toolkit, package):
+    
+    @callback(RequestWithoutLink)
+    async def help_message(self, toolkit, package):
         """
-        при получении команды '@your_bot_id сократить' => запросить ссылку
-        и отправить её на сокращение в vk.cc
+        No args
+        """
+        
+        user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
+
+        await toolkit.messages.send(package, SHORTING_NO_ARGS.format(
+                user_mention = repr(user_mention)
+            ))
+        
+    @callback(RequestWithLimit)
+    async def error_message(self, toolkit, package):
+        """
+        too many args
         """
 
         user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
 
-        if len(package.items) == 2:
-            await toolkit.messages.send(package, SHORTING_START.format(
-                user_mention = repr(user_mention)
-            ))
-            reply = await toolkit.messages.get_reply(package)
-            links = [reply.text]
+        response = SHORTING_TOO_MANY.format(
+            user_mention = repr(user_mention)
+        )
 
-        else:
-            links = package.items[2:]
-        
-        if len(links) == 1:
-            link = await toolkit.api.utils.getShortLink(url = links[0])
-            response = SHORTING_RESULT.format(
-                user_mention = repr(user_mention), 
-                link = link.short_url
-            )
+        await toolkit.messages.send(package, response)
 
-        else:
-            response = SHORTING_TOO_MANY.format(
-                user_mention = repr(user_mention)
-            )
+    @callback(RequestWithoutLimit)
+    async def answer(self, toolkit, package):
+        """
+        short link
+        """
+
+        user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
+
+        link = await toolkit.api.utils.getShortLink(url = package.items[2])
+
+        response = SHORTING_RESULT.format(
+            user_mention = repr(user_mention), 
+            link = link.short_url
+        )
 
         await toolkit.messages.send(package, response)
         
