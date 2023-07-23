@@ -1,32 +1,43 @@
-from os import getenv
+import os
 
 from vkbotkit import Bot
-from vkbotkit.objects import enums
+from vkbotkit.objects.enums import LogLevel
+
+
+switch_logger_level = {
+    False: LogLevel.INFO,
+    True: LogLevel.DEBUG
+}
 
 
 async def bot(debug_mode = False):
     """
-    Корень приложения VKBotKit v1.3 для работы через сообщество
+    Init bot and start polling with VKBotKit
 
-    debug_mode: bool - запуск бота с debug токеном
+    debug_mode: bool - enable debug messages
     """
 
-    if debug_mode:
-        token = getenv('DEBUG_TOKEN')
-        group_id = int(getenv('DEBUG_ID'))
-        log_level = enums.LogLevel.DEBUG
+    # Init bot
 
-    else:
-        token = getenv('PUBLIC_TOKEN')
-        group_id = int(getenv('PUBLIC_ID'))
-        log_level = enums.LogLevel.INFO
+    token = os.environ.get('ACCESS_TOKEN', '')
+    bot_id = os.environ.get('BOT_ID', '0')
+
+    bot = Bot(token, int(bot_id))
+        
+    # Configure logger
 
     log_to_file = True
     log_to_console = True
+    log_level = switch_logger_level[debug_mode]
 
-    bot = Bot(token, group_id)
     bot.toolkit.configure_logger(log_level, log_to_file, log_to_console)
-    bot.toolkit.bot_mentions=getenv('BOT_MENTIONS').split(" ")
+
+    # Configure mentions
+
+    bot_mentions_separator = os.environ.get("BOT_MENTIONS_SEPARATOR", " ")
+    bot_mentions = os.environ.get("BOT_MENTIONS", "")
+    bot.toolkit.bot_mentions = bot_mentions.split(bot_mentions_separator)
 
     # START POLLING
+
     await bot.start_polling()
