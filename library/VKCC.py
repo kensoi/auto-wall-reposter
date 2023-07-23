@@ -5,10 +5,12 @@ Copyright 2023 kensoi
 from vkbotkit.objects import Library
 from vkbotkit.objects.callback import callback
 from vkbotkit.objects.enums import NameCases
-from vkbotkit.objects.filters.filter import Filter, Negation
+from vkbotkit.objects.filters.filter import Filter, Not
 from vkbotkit.objects.filters.message import IsCommand
 
+init = lambda definition: definition()
 
+@init
 class LengthLimit(Filter):
     async def check(self, _, package):
         return len(package.items) == 3
@@ -28,7 +30,7 @@ SHORTING_TOO_MANY = """
 
 Request = IsCommand({"сократить", "сократи"}, only_with_args=True)
 RequestWithoutLimit = LengthLimit & Request
-RequestWithLimit = Negation(LengthLimit) & Request
+RequestWithLimit = Not(LengthLimit) & Request
 RequestWithoutLink = IsCommand({"сократить", "сократи"}, only_with_args=False)
 
 class Main(Library):

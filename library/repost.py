@@ -11,7 +11,7 @@ from vkbotkit.objects.filters.events import WhichEvent
 from vkbotkit.objects.enums import Events
 
 
-NewPost = WhichEvent(Events.WALL_POST_NEW)
+NewPost = WhichEvent({Events.WALL_POST_NEW, })
 
 class Main(Library):
     """

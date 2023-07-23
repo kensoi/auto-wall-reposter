@@ -11,7 +11,7 @@ from io import BytesIO
 
 from vkbotkit.objects import callback, Library
 
-from vkbotkit.objects.filters.filter import Filter, Negation
+from vkbotkit.objects.filters.filter import Filter, Not
 from vkbotkit.objects.filters.events import WhichEvent
 from vkbotkit.objects.filters.message import IsCommand
 from vkbotkit.objects.enums import Events, LogLevel
@@ -115,10 +115,10 @@ class isSysAdmin(Filter):
 
 # Event types
 
-PostToTweet = WhichEvent(Events.WALL_POST_NEW)
+PostToTweet = WhichEvent({Events.WALL_POST_NEW ,})
 MessageToTweet = isSysAdmin & IsCommand({"tweet", "твит", "твитнуть"}, only_with_args=True)
 TweetTrouble = isSysAdmin & IsCommand({"tweet", "твит", "твитнуть"}, only_with_args=False)
-NotAdmin = Negation(isSysAdmin) & IsCommand({"tweet", "твит", "твитнуть"})
+NotAdmin = Not(isSysAdmin) & IsCommand({"tweet", "твит", "твитнуть"})
 
 
 # message templates

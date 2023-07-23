@@ -7,14 +7,16 @@ from vkbotkit.objects.callback import callback
 from vkbotkit.objects.mention import Mention
 from vkbotkit.objects.enums import NameCases
 
-from vkbotkit.objects.filters.filter import Negation
+from vkbotkit.objects.filters.filter import Not
 from vkbotkit.objects.filters.message import IsCommand, IsUserAdmin, IsUserChat, IsBotAdmin
 
 
-RequestFromChat = IsCommand({"кик", "исключить", "выкинуть"}) & IsUserChat()
-NoBotAdminRules = IsCommand({"кик", "исключить", "выкинуть"}) & Negation(IsBotAdmin())
-RequestFromUser = IsCommand({"кик", "исключить", "выкинуть"}) & IsBotAdmin() & Negation(IsUserAdmin())
-RequestWithAdminRights = IsCommand({"кик", "исключить", "выкинуть"}) & IsBotAdmin() & IsUserAdmin()
+Command = IsCommand({"кик", "исключить", "выкинуть"})
+
+RequestFromChat = Command & IsUserChat
+NoBotAdminRules = Command & Not(IsBotAdmin)
+RequestFromUser = Command & IsBotAdmin & Not(IsUserAdmin)
+RequestWithAdminRights = Command & IsBotAdmin & IsUserAdmin
 
 NO_ADMIN_RIGHTS = """
 {user_mention}, у меня нет прав администратора для выполнения этой команды.
@@ -50,17 +52,11 @@ KICK_EXCEPT_NO_MEMBER = """
 
 class Main(Library):
     """
-    Плагин для управления беседой при помощи VKBotKit
-    Команды в этом плагине:
-    @botname кик
+    Kick user via command
     """
 
     @callback(RequestFromChat)
     async def kick_user(self, toolkit, package):
-        """
-        при получении команды '@botname кикнуть' в диалоге => отправлять текст ONLY_CHAT_COMMAND
-        """
-        
         user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
 
         await toolkit.messages.send(package, ONLY_CHAT_COMMAND.format(
@@ -70,11 +66,6 @@ class Main(Library):
 
     @callback(NoBotAdminRules)
     async def kick_no_bot_admin(self, toolkit, package):
-        """
-        при получении команды '@botname кикнуть' при отсутствии
-        прав админа у бота => отправлять текст NO_ADMIN_RIGHTS
-        """
-        
         user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
 
         await toolkit.messages.send(package, NO_ADMIN_RIGHTS.format(
@@ -84,11 +75,6 @@ class Main(Library):
 
     @callback(RequestFromUser)
     async def kick_no_admin(self, toolkit, package):
-        """
-        при получении команды '@botname кикнуть' при отсутствии
-        прав админа у пользователя => отправлять текст NO_ADMIN_RIGHTS_AT_USER
-        """
-        
         user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
 
         await toolkit.messages.send(package, NO_ADMIN_RIGHTS_AT_USER.format(
@@ -98,10 +84,6 @@ class Main(Library):
 
     @callback(RequestWithAdminRights)
     async def kick_admin(self, toolkit, package):
-        """
-        Функция для исключения пользователей
-        """
-
         user_map = package.mentions[1:]
 
         if hasattr(package, "fwd_messages"):

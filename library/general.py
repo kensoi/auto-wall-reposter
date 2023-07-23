@@ -2,48 +2,62 @@
 Copyright 2023 kensoi
 """
 
-from os import getenv
+import os
 
 from vkbotkit.objects import callback, Library
 from vkbotkit.objects.enums import NameCases, Events
+from vkbotkit.objects.filters.filter import Filter, Not
 from vkbotkit.objects.filters.message import IsCommand
 from vkbotkit.objects.filters.events import WhichEvent
 
+# Filter helper
+init = lambda definition: definition()
+
+# Filters
+
+@init
+class isSysAdmin(Filter):
+    async def check(self, _, package):
+        return package.from_id != int(os.environ.get("BOT_ADMIN_ID"))
+    
 RulesRequest = IsCommand({"правила", "rules"}, only_without_args=True)
 CommandListRequest = IsCommand({"команды", "commands"}, only_without_args=True)
 StopBotRequest = IsCommand({"выход", "stop"}, only_without_args=True)
 IsReaction = WhichEvent({Events.MESSAGE_REACTION_EVENT, })
 
-reaction_with_rules = """
+# Message reaction templates
+
+REACTION_WITH_RULES = """
 {user_mention}, правила можно найти в соответствующем обсуждении: {topic_link}
 """
 
-reaction_with_commands = """
+REACTION_WITH_COMMANDS = """
 {user_mention}, список команд можно найти в соответствующем обсуждении: {topic_link}
 """
 
-reaction_to_attempt_to_stop = """
+STOP_REACTION = """
 Хорошо, завершаю работу.
 """
 
-reaction_to_attempt_to_stop_with_no_rights = """
+ERROR_REACTION = """
 {user_mention}, вам нельзя проворачивать такую аферу.
 """
 
-react_thank = "{reactor_mention}, спасибо за реакцию!"
+REACT_THANK = "{reactor_mention}, спасибо за реакцию!"
+
 
 class Main(Library):
     """
-    Библиотека с базовыми командами
+    General replies library
     """
 
     @callback(RulesRequest)
     async def send_rules(self, toolkit, package):
         user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
 
-        await toolkit.messages.send(package, reaction_with_rules.format(
+        await toolkit.messages.send(package, REACTION_WITH_RULES.format(
             user_mention = repr(user_mention),
-            topic_link = getenv("RULES_LINK")
+            topic_link = os.environ.get("RULES_LINK")
         ))
 
     @callback(CommandListRequest)
@@ -51,21 +65,22 @@ class Main(Library):
         bot_mention = await toolkit.get_my_mention()
         user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
 
-        await toolkit.messages.send(package, reaction_with_commands.format(
+        await toolkit.messages.send(package, REACTION_WITH_COMMANDS.format(
             user_mention = repr(user_mention),
             bot_mention = repr(bot_mention),
-            topic_link = getenv("COMMANDS_LINK")
+            topic_link = os.environ.get("COMMANDS_LINK")
         ))
         
-    @callback(StopBotRequest)
+    @callback(StopBotRequest & isSysAdmin)
     async def end_bot(self, toolkit, package):
-        if package.from_id == int(getenv("BOT_ADMIN_ID")):
-            await toolkit.messages.send(package, reaction_to_attempt_to_stop)
-            quit()
+        await toolkit.messages.send(package, STOP_REACTION)
+        quit()
 
+    @callback(StopBotRequest & Not(isSysAdmin))
+    async def end_bot_error(self, toolkit, package):
         user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
 
-        await toolkit.messages.send(package, reaction_to_attempt_to_stop_with_no_rights.format(
+        await toolkit.messages.send(package, ERROR_REACTION.format(
             user_mention = repr(user_mention),
         ))
 
@@ -73,7 +88,7 @@ class Main(Library):
     async def thank_for_reaction(self, toolkit, package):
         reactor_mention = await toolkit.create_mention(package.reacted_id)
 
-        await toolkit.messages.send(package, react_thank.format(reactor_mention = repr(reactor_mention)))
+        await toolkit.messages.send(package, REACT_THANK.format(reactor_mention = repr(reactor_mention)))
 
         
 
