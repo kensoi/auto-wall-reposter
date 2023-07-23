@@ -35,8 +35,8 @@ ERROR_REACTION = """
 {user_mention}, вам нельзя проворачивать такую аферу.
 """
 
-REACT_THANK = "{reactor_mention}, спасибо за реакцию!"
-# REACT_SWEAR = "{reactor_mention}, react.swear"
+REACT_THANK = "{reactor_mention}, react.thank"
+REACT_SWEAR = "{reactor_mention}, react.swear"
 
 class Main(Library):
     """
@@ -63,18 +63,15 @@ class Main(Library):
             topic_link = os.environ.get("COMMANDS_LINK")
         ))
 
-    @callback(GotReaction)
+    # @callback(GotReaction)
     async def thank_for_reaction(self, toolkit, package):
         reactor_mention = await toolkit.create_mention(package.reacted_id)
 
         await toolkit.messages.send(package, REACT_THANK.format(reactor_mention = repr(reactor_mention)))
 
     # @callback(LostReaction)
-    # async def swear_for_reaction(self, toolkit, package):
-    #     reactor_mention = await toolkit.create_mention(package.reacted_id)
+    async def swear_for_reaction(self, toolkit, package):
+        reactor_mention = await toolkit.create_mention(package.reacted_id)
 
-    #     await toolkit.messages.send(package, REACT_SWEAR.format(reactor_mention = repr(reactor_mention)))
-
-        
-
-        
+        await toolkit.messages.send(package, REACT_SWEAR.format(reactor_mention = repr(reactor_mention)))
+ 
