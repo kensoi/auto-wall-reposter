@@ -3,10 +3,10 @@ Copyright 2022 kensoi
 """
 
 import asyncio
+import os
 import sys
-from os import getenv
 from dotenv import load_dotenv
-from utils.replit_patch import replit_patch
+from utils.flask import keep_alive
 
 # asyncio
 
@@ -16,8 +16,8 @@ asyncio.set_event_loop(loop)
 # load environment values and patching Repl.It
 
 load_dotenv()
-debug_mode = "-d" in sys.argv or getenv('DEBUG_MODE') == "True"
-replit_patch(debug_mode)
+debug_mode = os.environ.get('DEBUG_MODE', "False") == "True" or "-d" in sys.argv
+keep_alive(debug_mode)
 
 if __name__ == "__main__":
     try:
