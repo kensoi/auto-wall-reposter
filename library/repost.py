@@ -2,38 +2,29 @@
 Copyright 2023 kensoi
 """
 
-from os import getenv
-from sys import argv
+import os
 
 from vkbotkit.objects import callback, Library
 from vkbotkit.utils import gen_random
 
-from vkbotkit.objects.filters.filter import Filter
+from vkbotkit.objects.filters.events import WhichEvent
 from vkbotkit.objects.enums import Events
 
 
-class NewPost(Filter):
-    async def check(self, _, package):
-        return package.type == Events.WALL_POST_NEW
-
-def get_wall_object(wall):
-        return f"wall{wall.owner_id}_{wall.id}"
-    
-def get_chat_id():
-    if "-d" in argv or getenv('DEBUG_MODE'):
-        return getenv('DEBUG_CHAT_TO_REPOST')
-    
-    return getenv('CHAT_TO_REPOST')
+NewPost = WhichEvent(Events.WALL_POST_NEW)
 
 class Main(Library):
     """
-    Библиотека с командами, предназначенными для приветствия пользователей
+    Repost a post to specified group
     """
 
-    @callback(NewPost())
+    @callback(NewPost)
     async def repost(self, toolkit, package):
-        chat_id = get_chat_id()
-        wall_id = get_wall_object(package)
+        chat_id = os.environ.get('CHAT_TO_REPOST')
+        wall_id = "wall{owner_id}_{post_id}".format(
+            owner_id = package.owner_id,
+            post_id = package.id
+        )
         
         await toolkit.api.messages.send(
             random_id = gen_random(),
