@@ -110,6 +110,9 @@ async def tweet(toolkit, message: str, attachments=None):
 @init
 class isSysAdmin(Filter):
     async def check(self, _, package):
+        if "from_id" not in package.raw:
+            return
+        
         return package.from_id != int(os.environ.get("BOT_ADMIN_ID"))
     
 PostToTweet = WhichEvent({Events.WALL_POST_NEW ,})

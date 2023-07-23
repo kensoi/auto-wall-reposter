@@ -6,7 +6,7 @@ import os
 
 from vkbotkit.objects import callback, Library
 from vkbotkit.objects.enums import NameCases, Events
-from vkbotkit.objects.filters.message import IsCommand
+from vkbotkit.objects.filters.message import IsCommand, GotReaction, LostReaction
 from vkbotkit.objects.filters.events import WhichEvent
 
 # Filter helper
@@ -16,7 +16,6 @@ init = lambda definition: definition()
 
 RulesRequest = IsCommand({"правила", "rules"}, only_without_args=True)
 CommandListRequest = IsCommand({"команды", "commands"}, only_without_args=True)
-IsReaction = WhichEvent({Events.MESSAGE_REACTION_EVENT, })
 
 # Message reaction templates
 
@@ -37,7 +36,7 @@ ERROR_REACTION = """
 """
 
 REACT_THANK = "{reactor_mention}, спасибо за реакцию!"
-
+# REACT_SWEAR = "{reactor_mention}, react.swear"
 
 class Main(Library):
     """
@@ -64,11 +63,17 @@ class Main(Library):
             topic_link = os.environ.get("COMMANDS_LINK")
         ))
 
-    @callback(IsReaction)
+    @callback(GotReaction)
     async def thank_for_reaction(self, toolkit, package):
         reactor_mention = await toolkit.create_mention(package.reacted_id)
 
         await toolkit.messages.send(package, REACT_THANK.format(reactor_mention = repr(reactor_mention)))
+
+    # @callback(LostReaction)
+    # async def swear_for_reaction(self, toolkit, package):
+    #     reactor_mention = await toolkit.create_mention(package.reacted_id)
+
+    #     await toolkit.messages.send(package, REACT_SWEAR.format(reactor_mention = repr(reactor_mention)))
 
         
 

@@ -13,6 +13,9 @@ init = lambda definition: definition()
 @init
 class LengthLimit(Filter):
     async def check(self, _, package):
+        if "items" not in package.raw:
+            return
+        
         return len(package.items) == 3
     
 
