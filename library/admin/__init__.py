@@ -8,42 +8,10 @@ from vkbotkit.objects.mention import Mention
 from vkbotkit.objects.enums import NameCases
 
 from vkbotkit.objects.filters.filter import Not
-from vkbotkit.objects.filters.message import IsCommand, IsUserAdmin, IsUserChat, IsBotAdmin
+from vkbotkit.objects.filters.message import IsUserAdmin, IsUserChat, IsBotAdmin
 
-
-Command = IsCommand({"кик", "исключить", "выкинуть"})
-
-NO_ADMIN_RIGHTS = """
-{user_mention}, у меня нет прав администратора для выполнения этой команды.
-"""
-
-NO_ADMIN_RIGHTS_AT_USER = """
-{user_mention}, вам нельзя проворачивать такую аферу.
-"""
-
-ONLY_CHAT_COMMAND = """
-{user_mention}, эта команда предназначена для беседы.
-"""
-
-KICK_START = """
-{user_mention}, исключаю пользователей...
-"""
-
-KICK_FINISH = """
-Пользователи исключены.
-"""
-
-KICK_EXCEPT_NO_USER = """
-Нет выделенных пользователей. Для выделения пользователей отправьте команду "{bot_mention} кик" со списком упоминаний в любой форме, списком пересланных сообщений или ответом на сообщение.
-"""
-
-KICK_EXCEPT_ADMIN = """
-Невозможно исключить {}: пользователь имеет права администратора.
-"""
-
-KICK_EXCEPT_NO_MEMBER = """
-Невозможно исключить {}: не состоит в беседе.
-"""
+from .templates import *
+from .filters import *
 
 class Main(Library):
     """
