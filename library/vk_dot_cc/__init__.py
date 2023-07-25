@@ -5,41 +5,16 @@ Copyright 2023 kensoi
 from vkbotkit.objects import Library
 from vkbotkit.objects.callback import callback
 from vkbotkit.objects.enums import NameCases
-from vkbotkit.objects.filters.filter import Filter, Not
-from vkbotkit.objects.filters.message import IsCommand
+from vkbotkit.objects.filters.filter import Not
 
-init = lambda definition: definition()
-
-@init
-class LengthLimit(Filter):
-    async def check(self, _, package):
-        if "items" not in package.raw:
-            return
-        
-        return len(package.items) == 3
-    
-
-SHORTING_NO_ARGS = """
-{user_mention}, отправьте команду с ссылкой без пробелов, например "миурува сократить vk.com".
-"""
-
-SHORTING_RESULT = """
-{user_mention}, ваша ссылка: {link}.
-"""
-
-SHORTING_TOO_MANY = """
-{user_mention}, невозможно сократить ссылку: в ней содержится один или несколько пробелов.
-"""
-
-Request = IsCommand({"сократить", "сократи"}, only_with_args=True)
-RequestWithoutLink = IsCommand({"сократить", "сократи"}, only_with_args=False)
+from .filters import *
+from .templates import *
 
 class Main(Library):
     """
     Get short link by vk.cc
     """
 
-    
     @callback(RequestWithoutLink)
     async def help_message(self, toolkit, package):
         """
