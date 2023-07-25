@@ -5,7 +5,7 @@ Copyright 2023 kensoi
 from vkbotkit.objects.filters.filter import Filter
 from vkbotkit.objects.filters.message import IsCommand
 
-from utils.init import init
+from utils import init
 
 
 @init

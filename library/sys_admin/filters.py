@@ -7,7 +7,7 @@ import os
 from vkbotkit.objects.filters.message import IsCommand
 from vkbotkit.objects.filters.filter import Filter
 
-from utils.init import init
+from utils import init
 
 
 @init

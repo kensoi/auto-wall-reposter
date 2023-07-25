@@ -9,7 +9,7 @@ from vkbotkit.objects.filters.events import WhichEvent
 from vkbotkit.objects.filters.message import IsCommand
 from vkbotkit.objects.enums import Events
 
-from utils.init import init
+from utils import init
 
 
 @init
