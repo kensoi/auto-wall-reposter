@@ -12,7 +12,6 @@ from vkbotkit.objects.enums import Events
 from utils.init import init
 
 
-# Filters
 @init
 class isSysAdmin(Filter):
     async def check(self, _, package):

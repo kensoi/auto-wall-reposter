@@ -7,6 +7,7 @@ from vkbotkit.objects.filters.message import IsCommand
 
 from utils.init import init
 
+
 @init
 class LengthLimit(Filter):
     async def check(self, _, package):

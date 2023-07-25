@@ -9,7 +9,7 @@ from vkbotkit.objects.filters.filter import Filter
 
 from utils.init import init
 
-# Filters
+
 @init
 class isSysAdmin(Filter):
     async def check(self, _, package):
