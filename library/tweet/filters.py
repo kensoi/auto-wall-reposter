@@ -9,10 +9,10 @@ from vkbotkit.objects.filters.events import WhichEvent
 from vkbotkit.objects.filters.message import IsCommand
 from vkbotkit.objects.enums import Events
 
-init = lambda definition: definition()
+from utils.init import init
+
 
 # Filters
-
 @init
 class isSysAdmin(Filter):
     async def check(self, _, package):

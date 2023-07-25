@@ -2,6 +2,7 @@
 Copyright 2023 kensoi
 """
 
+
 NO_ADMIN_RIGHTS = """
 {user_mention}, у меня нет прав администратора для выполнения этой команды.
 """

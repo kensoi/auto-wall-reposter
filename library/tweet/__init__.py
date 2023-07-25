@@ -15,6 +15,7 @@ from .api import tweet
 from .templates import *
 from .filters import *
 
+
 class Main(Library):
     """
     Twitter API library for VKBotKit

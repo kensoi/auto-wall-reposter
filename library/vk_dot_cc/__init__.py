@@ -10,6 +10,7 @@ from vkbotkit.objects.filters.filter import Not
 from .filters import *
 from .templates import *
 
+
 class Main(Library):
     """
     Get short link by vk.cc

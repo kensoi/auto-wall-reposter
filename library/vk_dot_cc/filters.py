@@ -5,7 +5,7 @@ Copyright 2023 kensoi
 from vkbotkit.objects.filters.filter import Filter
 from vkbotkit.objects.filters.message import IsCommand
 
-init = lambda definition: definition()
+from utils.init import init
 
 @init
 class LengthLimit(Filter):

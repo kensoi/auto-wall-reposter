@@ -11,11 +11,9 @@ from io import BytesIO
 
 
 init = lambda definition: definition()
-
 _executor = ThreadPoolExecutor(10)
 
 # Twitter API
-
 @init
 def client():
     TWITTER_API_KEY = os.environ.get("TWITTER_API_KEY")
