@@ -5,38 +5,11 @@ Copyright 2023 kensoi
 import os
 
 from vkbotkit.objects import callback, Library
-from vkbotkit.objects.enums import NameCases, Events
-from vkbotkit.objects.filters.message import IsCommand, GotReaction, LostReaction
-from vkbotkit.objects.filters.events import WhichEvent
+from vkbotkit.objects.enums import NameCases
 
-# Filter helper
-init = lambda definition: definition()
+from .filters import *
+from .templates import *
 
-# Filters
-
-RulesRequest = IsCommand({"правила", "rules"}, only_without_args=True)
-CommandListRequest = IsCommand({"команды", "commands"}, only_without_args=True)
-
-# Message reaction templates
-
-REACTION_WITH_RULES = """
-{user_mention}, правила можно найти в соответствующем обсуждении: {topic_link}
-"""
-
-REACTION_WITH_COMMANDS = """
-{user_mention}, список команд можно найти в соответствующем обсуждении: {topic_link}
-"""
-
-STOP_REACTION = """
-Хорошо, завершаю работу.
-"""
-
-ERROR_REACTION = """
-{user_mention}, вам нельзя проворачивать такую аферу.
-"""
-
-REACT_THANK = "{reactor_mention}, react.thank"
-REACT_SWEAR = "{reactor_mention}, react.swear"
 
 class Main(Library):
     """
