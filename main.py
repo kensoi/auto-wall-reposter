@@ -20,10 +20,9 @@ load_dotenv()
 debug_mode = os.environ.get('DEBUG_MODE', "False") == "True" or "-d" in sys.argv
 
 if __name__ == "__main__":
-
     try:
         keep_alive(debug_mode)
-        
+
         from utils.bot import bot
         
         miuruwa_bot = bot(debug_mode)
