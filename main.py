@@ -17,7 +17,7 @@ asyncio.set_event_loop(loop)
 # load environment values and patching Repl.It
 
 load_dotenv()
-debug_mode = os.environ.get('DEBUG_MODE', "False") == "True" or "-d" in sys.argv
+debug_mode = os.environ.get('DEBUG_MODE') == "True" or "-d" in sys.argv
 
 if __name__ == "__main__":
     try:
