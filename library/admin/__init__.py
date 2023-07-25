@@ -13,6 +13,7 @@ from vkbotkit.objects.filters.message import IsUserAdmin, IsUserChat, IsBotAdmin
 from .templates import *
 from .filters import *
 
+
 class Main(Library):
     """
     Kick user via command
