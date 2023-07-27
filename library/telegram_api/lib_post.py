@@ -2,18 +2,19 @@
 Copyright 2023 kensoi
 """
 
-from vkbotkit.objects import callback, Library
-
 from vkbotkit.objects.enums import LogLevel
+from vkbotkit.objects import Library
+from vkbotkit.objects.callback import callback
 
-from .api import tweet
+from .api import post_message
+
 from .templates import RIGHTS_ERROR, NO_MESSAGE, NO_ERRORS, EXCEPTION_MESSAGE
-from .filters import NotAdmin, TweetTrouble, MessageToTweet
+from .filters import MessageToPost, PostTrouble, NotAdmin
 
 
-class ChatCommands(Library):
+class Post(Library):
     """
-    Chat commands
+    Repost a post to specified telegram channel
     """
 
     @callback(NotAdmin)
@@ -21,7 +22,7 @@ class ChatCommands(Library):
         await toolkit.messages.send(package, RIGHTS_ERROR)
 
 
-    @callback(TweetTrouble)
+    @callback(PostTrouble)
     async def tweet_help(self, toolkit, package):
         """
         Send help message to user
@@ -32,19 +33,19 @@ class ChatCommands(Library):
         await toolkit.messages.send(package, NO_MESSAGE.format(bot_mention = repr(bot_mention)))
     
 
-    @callback(MessageToTweet)
-    async def tweet(self, toolkit, package):
-        message_to_tweet = " ".join(package.items[2:])
-        tweet_result = NO_ERRORS
+    @callback(MessageToPost)
+    async def post(self, toolkit, package):
+        message_to_post = " ".join(package.items[2:])
+        post_result = NO_ERRORS
         result_type = LogLevel.DEBUG
 
         try:
-            await tweet(toolkit, message_to_tweet, package.attachments)
+            await post_message(message_to_post)
 
         except Exception as e:
-            tweet_result = EXCEPTION_MESSAGE.format(exception=e)
+            post_result = EXCEPTION_MESSAGE.format(exception=e)
             result_type = LogLevel.ERROR
 
         finally:
-            toolkit.log(tweet_result, log_level=result_type)
-            await toolkit.messages.send(package, tweet_result)
+            toolkit.log(post_result, log_level=result_type)
+            await toolkit.messages.send(package, post_result)

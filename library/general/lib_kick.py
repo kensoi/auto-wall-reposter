@@ -10,16 +10,20 @@ from vkbotkit.objects.enums import NameCases
 from vkbotkit.objects.filters.filter import Not
 from vkbotkit.objects.filters.message import IsUserAdmin, IsUserChat, IsBotAdmin
 
-from .templates import *
-from .filters import *
+from .templates import (
+    ONLY_CHAT_COMMAND, NO_ADMIN_RIGHTS, NO_ADMIN_RIGHTS_AT_USER, 
+    KICK_EXCEPT_NO_USER, KICK_START, KICK_EXCEPT_ADMIN, KICK_EXCEPT_NO_MEMBER
+)
+
+from .filters import KickMembers
 
 
-class Main(Library):
+class KickMethod(Library):
     """
     Kick user via command
     """
 
-    @callback(Command & IsUserChat)
+    @callback(KickMembers & IsUserChat)
     async def kick_user(self, toolkit, package):
         user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
 
@@ -28,7 +32,7 @@ class Main(Library):
         ))
 
 
-    @callback(Command & Not(IsBotAdmin))
+    @callback(KickMembers & Not(IsBotAdmin))
     async def kick_no_bot_admin(self, toolkit, package):
         user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
 
@@ -37,7 +41,7 @@ class Main(Library):
         ))
 
 
-    @callback(Command & IsBotAdmin & Not(IsUserAdmin))
+    @callback(KickMembers & IsBotAdmin & Not(IsUserAdmin))
     async def kick_no_admin(self, toolkit, package):
         user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
 
@@ -46,7 +50,7 @@ class Main(Library):
         ))
 
 
-    @callback(Command & IsBotAdmin & IsUserAdmin)
+    @callback(KickMembers & IsBotAdmin & IsUserAdmin)
     async def kick_admin(self, toolkit, package):
         user_map = package.mentions[1:]
 

@@ -6,11 +6,11 @@ from vkbotkit.objects import callback, Library
 from vkbotkit.objects.enums import NameCases
 from vkbotkit.objects.filters.actions import ChatInviteUser, ChatKickUser
 
-from .filters import *
-from .templates import *
+from .filters import StartCommand, StartText
+from .templates import REACTION_TO_NEW_USER, REACTION_TO_KICK
 
 
-class Main(Library):
+class ActionReactions(Library):
     @callback(StartCommand | StartText | ChatInviteUser)
     async def chat_invite_user(self, toolkit, package):
         bot_mention = await toolkit.get_my_mention()

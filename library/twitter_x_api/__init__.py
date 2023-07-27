@@ -2,7 +2,5 @@
 Copyright 2023 kensoi
 """
 
-# Twitter API tools
-
-from .reposter import Reposter
-from .chat_commands import ChatCommands
+from .lib_reposter import Reposter
+from .lib_chat_commands import ChatCommands
