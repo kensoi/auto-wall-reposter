@@ -23,7 +23,7 @@ class Post(Library):
 
 
     @callback(PostTrouble)
-    async def tweet_help(self, toolkit, package):
+    async def post_help(self, toolkit, package):
         """
         Send help message to user
         """
@@ -36,16 +36,15 @@ class Post(Library):
     @callback(MessageToPost)
     async def post(self, toolkit, package):
         message_to_post = " ".join(package.items[2:])
-        post_result = NO_ERRORS
-        result_type = LogLevel.DEBUG
 
         try:
             await post_message(message_to_post)
 
+            toolkit.log(NO_ERRORS, log_level=LogLevel.DEBUG)
+            await toolkit.messages.send(package, NO_ERRORS)
+
         except Exception as e:
             post_result = EXCEPTION_MESSAGE.format(exception=e)
-            result_type = LogLevel.ERROR
 
-        finally:
-            toolkit.log(post_result, log_level=result_type)
+            toolkit.log(post_result, log_level=LogLevel.ERROR)
             await toolkit.messages.send(package, post_result)

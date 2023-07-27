@@ -16,6 +16,6 @@ class isSysAdmin(Filter):
         if "from_id" not in package.raw:
             return
         
-        return package.from_id != int(os.environ.get("BOT_ADMIN_ID"))
+        return package.from_id == int(os.environ.get("BOT_ADMIN_ID"))
     
 StopBotRequest = IsCommand({"выход", "stop"}, only_without_args=True)

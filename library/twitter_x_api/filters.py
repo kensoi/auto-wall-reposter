@@ -18,9 +18,11 @@ class isSysAdmin(Filter):
         if "from_id" not in package.raw:
             return
         
-        return package.from_id != int(os.environ.get("BOT_ADMIN_ID"))
+        return package.from_id == int(os.environ.get("BOT_ADMIN_ID"))
+
+tweet = {"tweet", "твит", "твитнуть"}
     
 PostToTweet = WhichEvent({Events.WALL_POST_NEW ,})
-MessageToTweet = isSysAdmin & IsCommand({"tweet", "твит", "твитнуть"}, only_with_args=True)
-TweetTrouble = isSysAdmin & IsCommand({"tweet", "твит", "твитнуть"}, only_with_args=False)
-NotAdmin = Not(isSysAdmin) & IsCommand({"tweet", "твит", "твитнуть"})
+MessageToTweet = isSysAdmin & IsCommand(tweet, only_with_args=True)
+TweetTrouble = isSysAdmin & IsCommand(tweet, only_without_args=True)
+NotAdmin = Not(isSysAdmin) & IsCommand(tweet)
