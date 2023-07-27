@@ -2,10 +2,8 @@
 Copyright 2023 kensoi
 """
 
-from vkbotkit.objects.filters.message import IsCommand, IsThatText
+from vkbotkit.objects.filters.message import IsCommand
 
-KickMembers = IsCommand({"кик", "исключить", "выкинуть"})
-RulesRequest = IsCommand({"правила", "rules"}, only_without_args=True)
-StartCommand = IsCommand({"старт",}, only_without_args=True)
-StartText = IsThatText({"Начать", "начать"})
-CommandListRequest = IsCommand({"команды", "commands"}, only_without_args=True)
+
+RulesCommand = IsCommand(["правила", "rules"])
+HelpCommand = IsCommand(["помощь", "команды", "help", "commands"])

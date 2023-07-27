@@ -2,9 +2,8 @@
 Copyright 2023 kensoi
 """
 
-from vkbotkit.objects.filters.filter import Filter
 from vkbotkit.objects.filters.message import IsCommand
-
+from vkbotkit.objects.filters.filter import Filter, Not
 from utils import init
 
 
@@ -15,6 +14,8 @@ class LengthLimit(Filter):
             return
         
         return len(package.items) == 3
-    
-Request = IsCommand({"сократить", "сократи"}, only_with_args=True)
-RequestWithoutLink = IsCommand({"сократить", "сократи"}, only_with_args=False)
+
+ShortLink=IsCommand(["сократить"])
+
+ShortLinkArgsTrouble = ShortLink & Not(LengthLimit)
+ShortLinkArgs = ShortLink & LengthLimit
