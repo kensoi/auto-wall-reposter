@@ -2,6 +2,7 @@
 Copyright 2023 kensoi
 """
 
+
 TELEGRAM_CHANNEL_NOTIFICATION = """
 Внимание всем! В группе новый пост: {post_link}
 """

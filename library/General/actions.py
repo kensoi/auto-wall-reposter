@@ -18,9 +18,8 @@ class ActionReactions(Library):
     async def new_user(self, toolkit, package):
         user_mention = await toolkit.create_mention(package.action.member_id, None, NameCases.NOM)
 
-        response = NEW_USER.format(
+        with NEW_USER.format(
             bot_mention = toolkit.bot_mentions[0],
             user_mention = user_mention
-        )
-        
-        await toolkit.messages.send(package, response)
+        ) as response:
+            await toolkit.messages.send(package, response)

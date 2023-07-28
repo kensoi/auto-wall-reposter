@@ -24,12 +24,11 @@ from .templates import (
 class TelegramPost(Library):
     @callback(TGNoArgs)
     async def no_args(self, toolkit, package):
-        response = NO_ARGS_AT_COMMAND.format(
+        with NO_ARGS_AT_COMMAND.format(
             bot_mention = repr(package.items[0]),
             command = package.items[1]
-        )
-
-        await toolkit.messages.send(package, response)
+        ) as response:
+            await toolkit.messages.send(package, response)
 
     @callback(TGNotBotAdmin)
     async def unknown_user(self, toolkit, package):
@@ -37,13 +36,13 @@ class TelegramPost(Library):
 
     @callback(TGBotAdminPost)
     async def repost(self, toolkit, package):
-        tweet_result = SUCCESS_REPOST_TELEGRAM.format(exception=e)
+        tweet_result = SUCCESS_REPOST_TELEGRAM
         result_type = LogLevel.DEBUG
 
         channel_notification = " ".join(package.items[2:])
         
         try:
-            await post_message(channel_notification)
+            await post_message(channel_notification, package.attachments)
 
         except Exception as e:
             tweet_result = EXCEPTION_MESSAGE.format(exception=e)

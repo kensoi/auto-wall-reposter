@@ -4,7 +4,7 @@ Copyright 2023 kensoi
 
 from vkbotkit.objects.filters.filter import Not
 from vkbotkit.objects.filters.message import IsCommand
-from assets.bot_admin.utils import isBotAdmin
+from assets.utils.bot_admin import isBotAdmin
 
 
 quit_set = ["quit", "выход"]

@@ -1,6 +1,12 @@
+"""
+Copyright 2023 kensoi
+"""
+
 import os
+
 from vkbotkit.objects.filters.filter import Filter
-from utils import init
+
+from .init import init
 
 
 @init

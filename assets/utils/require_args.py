@@ -1,6 +1,8 @@
-import asyncio
+"""
+Copyright 2023 kensoi
+"""
+
 import inspect
-from contextlib import suppress
 
 
 def requires_arguments(definition):
@@ -17,19 +19,3 @@ def requires_arguments(definition):
         return definition.__init__.__code__.co_argcount > 1
     
     return definition.__code__.co_argcount > 0
-
-async def kill_tasks():
-    loop = asyncio.get_event_loop()
-    pending = asyncio.all_tasks(loop)
-
-    for task in pending:
-        task.cancel()
-        
-        with suppress(asyncio.CancelledError):
-            await task 
-
-def init(definition):
-    if not requires_arguments(definition):
-        return definition()
-    
-    return definition

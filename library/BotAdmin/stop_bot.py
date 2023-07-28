@@ -4,6 +4,7 @@ Copyright 2023 kensoi
 
 from vkbotkit.objects import Library
 from vkbotkit.objects.callback import callback
+from vkbotkit.objects.enums import NameCases
 
 from .filters import (
     BotAdminQuit,
@@ -22,4 +23,6 @@ class StopBot(Library):
 
     @callback(BotAdminQuit)
     async def unknown_user(self, toolkit, package):
-        await toolkit.messages.send(package, USER_IS_NOT_BOT_ADMIN)
+        user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
+        with USER_IS_NOT_BOT_ADMIN.format(user_mention=user_mention) as response:
+            await toolkit.messages.send(package, response)

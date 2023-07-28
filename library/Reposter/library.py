@@ -32,14 +32,10 @@ class Reposter(Library):
             post_id = post_full_id
         )
 
-        channel_notification = TELEGRAM_CHANNEL_NOTIFICATION.format(
-            post_link=post_link
-        )
-
-        
         try:
             await tweet(toolkit, package.text, package.attachments)
-            await post_message(channel_notification)
+            with TELEGRAM_CHANNEL_NOTIFICATION.format(post_link=post_link) as notification:
+                await post_message(notification)
 
         except Exception as e:
             tweet_result = EXCEPTION_MESSAGE.format(exception=e)

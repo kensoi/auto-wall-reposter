@@ -24,12 +24,11 @@ from .templates import (
 class TwitterPost(Library):
     @callback(TWNoArgs)
     async def no_args(self, toolkit, package):
-        response = NO_ARGS_AT_COMMAND.format(
+        with NO_ARGS_AT_COMMAND.format(
             bot_mention = repr(package.items[0]),
             command = package.items[1]
-        )
-
-        await toolkit.messages.send(package, response)
+        ) as response:
+            await toolkit.messages.send(package, response)
 
     @callback(TWNotBotAdmin)
     async def unknown_user(self, toolkit, package):
