@@ -10,7 +10,7 @@ USER_IS_NOT_BOT_ADMIN = """
 {user_mention}, вас нет полномочий для выполнения этой команды.
 """
 SUCCESS_REPOST_TWITTER = "Твит успешно создан"
-SUCCESS_REPOST_TELEGRAM = "Сообщение успешно отправлено в ваше ТГК"
+SUCCESS_REPOST_TELEGRAM = "Сообщение успешно отправлено в ваше ТГК - https://t.me/{channel_id}"
 EXCEPTION_MESSAGE = """
 В ходе выполнения команды вышло исключение: {exception}
 """

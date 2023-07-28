@@ -2,6 +2,8 @@
 Copyright 2023 kensoi
 """
 
+import os
+
 from vkbotkit.objects import Library
 from vkbotkit.objects.enums import LogLevel
 from vkbotkit.objects.callback import callback
@@ -36,7 +38,9 @@ class TelegramPost(Library):
 
     @callback(TGBotAdminPost)
     async def repost(self, toolkit, package):
-        tweet_result = SUCCESS_REPOST_TELEGRAM
+        tweet_result = SUCCESS_REPOST_TELEGRAM.format(
+            channel_id = os.environ.get("TELEGRAM_CHANNEL_ID")
+        )
         result_type = LogLevel.DEBUG
 
         channel_notification = " ".join(package.items[2:])
