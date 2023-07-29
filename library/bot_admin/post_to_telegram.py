@@ -4,6 +4,8 @@ Copyright 2023 kensoi
 
 import os
 
+from aiohttp.client_exceptions import ClientResponseError
+
 from vkbotkit.objects import Library
 from vkbotkit.objects.enums import LogLevel
 from vkbotkit.objects.callback import callback
@@ -24,8 +26,16 @@ from .templates import (
 
 
 class TelegramPost(Library):
+    """
+    Post to telegram via command "{bot_mention} post {message}"
+    """
+
     @callback(TGNoArgs)
     async def no_args(self, toolkit, package):
+        """
+        try to post without message text or attachments
+        """
+
         with NO_ARGS_AT_COMMAND.format(
             bot_mention = repr(package.items[0]),
             command = package.items[1]
@@ -34,22 +44,28 @@ class TelegramPost(Library):
 
     @callback(TGNotBotAdmin)
     async def unknown_user(self, toolkit, package):
+        """
+        User has no bot-admin rights
+        """
+
         await toolkit.messages.send(package, USER_IS_NOT_BOT_ADMIN)
 
     @callback(TGBotAdminPost)
     async def repost(self, toolkit, package):
-        tweet_result = SUCCESS_REPOST_TELEGRAM.format(
-            channel_id = os.environ.get("TELEGRAM_CHANNEL_ID")
-        )
-        result_type = LogLevel.DEBUG
+        """
+        User with bot-admin rights send message to post at telegram channel
+        """
 
+        result_type = LogLevel.DEBUG
+        channel_id = os.environ.get("TELEGRAM_CHANNEL_ID")
         channel_notification = " ".join(package.items[2:])
-        
+        tweet_result = SUCCESS_REPOST_TELEGRAM.format(channel_id = channel_id)
+
         try:
             await post_message(channel_notification, package.attachments)
 
-        except Exception as e:
-            tweet_result = EXCEPTION_MESSAGE.format(exception=e)
+        except ClientResponseError as exception:
+            tweet_result = EXCEPTION_MESSAGE.format(exception=exception )
             result_type = LogLevel.ERROR
 
         finally:

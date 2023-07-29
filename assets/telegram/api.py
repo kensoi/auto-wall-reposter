@@ -3,24 +3,51 @@ Copyright 2023 kensoi
 """
 
 import asyncio
-import aiohttp
-import os
 import json
+import os
+import typing
+
+import aiohttp
 
 from assets.utils.init import init
 
 
 @init
 class Client:
+    """
+    telegram client
+    """
+
     def __init__(self):
-        self.__ACCESS_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
+        """
+        init method
+        """
+
         self.session = aiohttp.ClientSession()
 
     @property
     def api(self):
+        """
+        api link
+        """
+
         return "https://api.telegram.org/bot{access_token}/{method_name}"
 
-    async def post(self, chat_id:str, message:str=[], photo_list:list[str]=[]):
+    async def post(self,
+                   chat_id:typing.Union[str, int],
+                   message:typing.Optional[str]=None,
+                   photo_list:typing.Optional[list[str]]=None
+                ):
+        """
+        HTTP POST METHOD
+        """
+
+        if not message:
+            message = ""
+
+        if not photo_list:
+            photo_list = []
+
         method_data = {}
         method_data["chat_id"] = chat_id
 
@@ -28,7 +55,7 @@ class Client:
             if len(photo_list) == 0:
                 method_name = "sendMessage"
                 text_key = "text"
-                
+
             elif len(photo_list) == 1:
                 method_name = "sendPhoto"
                 text_key = "caption"
@@ -37,32 +64,37 @@ class Client:
             method_data[text_key] = message
 
             method = self.api.format(
-                access_token = self.__ACCESS_TOKEN,
+                access_token = os.environ.get("TELEGRAM_BOT_TOKEN"),
                 method_name = method_name
             )
 
             return await self.session.post(url=method, data=method_data)
-        
+
         method = self.api.format(
-            access_token = self.__ACCESS_TOKEN,
+            access_token = os.environ.get("TELEGRAM_BOT_TOKEN"),
             method_name = "sendMediaGroup"
         )
-        media_list = list(map(getInputMediaPhoto, photo_list))
+        media_list = list(map(get_input_media_photo, photo_list))
 
         method_data["media"] = json.dumps(media_list)
 
-        response = await self.session.post(url=method, data=method_data)
+        await self.session.post(url=method, data=method_data)
+
         method = self.api.format(
-            access_token = self.__ACCESS_TOKEN,
+            access_token = os.environ.get("TELEGRAM_BOT_TOKEN"),
             method_name = "sendMessage"
         )
+
         method_data.pop("media")
-
         method_data["text"] = message
-        
-        return await self.session.post(url=method, data=method_data)           
 
-def getInputMediaPhoto(photo_url):
+        return await self.session.post(url=method, data=method_data)
+
+def get_input_media_photo(photo_url: str):
+    """
+    get inputmediaphoto object
+    """
+
     return {
         "type": "photo",
         "media": photo_url,
@@ -74,12 +106,10 @@ async def get_photo_url(photo):
     ### Args:
         photo: object of VK Photo
     """
-    
-    photo = max(photo.photo.sizes, key=lambda photo: photo.height)
-    
-    return photo.url
 
-async def post_message(message: str = "Hello world!", attachments: list = []):
+    return max(photo.photo.sizes, key=lambda photo: photo.height).url
+
+async def post_message(message: typing.Optional[str]=None, attachments: typing.Optional[list]=None):
     """Posts message on telegram channel that is specified by .env. 
 
     ### Args:
@@ -98,5 +128,5 @@ async def post_message(message: str = "Hello world!", attachments: list = []):
     ))
 
     list_of_photos = await asyncio.gather(*map(get_photo_url, photo_attachments))
-    
+
     await Client.post(channel_id, message, list_of_photos)

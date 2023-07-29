@@ -9,7 +9,7 @@ from assets.utils.bot_admin import isBotAdmin
 
 quit_set = ["quit", "выход"]
 post_to_telegram = ["post", "пост"]
-post_to_twitter = ["tweet", "твитнуть"]
+post_to_twitter = ["tweet", "твитнуть", "твит"]
 
 BotAdminQuit = isBotAdmin & IsCommand(quit_set, only_without_args=True)
 NotBotAdminQuit = Not(isBotAdmin) & IsCommand(quit_set, only_without_args=True)

@@ -23,10 +23,10 @@ if __name__ == "__main__":
     try:
         keep_alive(debug_mode)
 
-        from utils.bot import bot
-        
-        miuruwa_bot = bot(debug_mode)
-        loop.run_until_complete(miuruwa_bot)
+        from utils.bot import start_bot
+
+        MIURUWA_BOT = start_bot(debug_mode)
+        loop.run_until_complete(MIURUWA_BOT)
 
     except KeyboardInterrupt as e:
         pass

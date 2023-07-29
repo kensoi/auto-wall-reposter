@@ -6,7 +6,7 @@ from vkbotkit.objects import Library, callback
 from vkbotkit.objects.enums import NameCases
 
 from .filters import (
-    NoAdminRights, NoBotAdminRights, NoMentions, KickCommand
+    NoAdminRights, NoBotAdminRights, NoMentions, AdminKickCommand
 )
 from .templates import (
     NO_ADMIN_RIGHTS,
@@ -20,7 +20,15 @@ from .templates import (
 
 
 class KickUsers(Library):
+    """
+    Admin kick users
+    """
+
     def get_users_to_kick(self, package):
+        """
+        generator that yield a list of mentioned users in message (excluding bot)
+        """
+
         yield from map(int, package.mentions[1:])
 
         if "fwd_messages" in package.raw:
@@ -30,6 +38,10 @@ class KickUsers(Library):
             yield package.reply_message.from_id
 
     async def kick_user(self, toolkit, peer_id, user_id):
+        """
+        Kick method
+        """
+
         chat_id = peer_id - 2000000000
 
         return await toolkit.api.messages.removeChatUser(
@@ -39,6 +51,10 @@ class KickUsers(Library):
 
     @callback(NoAdminRights)
     async def no_admin_rights(self, toolkit, package):
+        """
+        User has no rights to kick
+        """
+
         user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
 
         response = NO_ADMIN_RIGHTS.format(
@@ -49,6 +65,9 @@ class KickUsers(Library):
 
     @callback(NoBotAdminRights)
     async def no_bot_admin_rights(self, toolkit, package):
+        """
+        Bot has no rights to kick
+        """
         user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
 
         response = NO_BOT_ADMIN_RIGHTS.format(
@@ -57,8 +76,13 @@ class KickUsers(Library):
 
         await toolkit.messages.send(package, response)
 
+
     @callback(NoMentions)
     async def no_mentions(self, toolkit, package):
+        """
+        Command without mentions
+        """
+
         user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
 
         response = NO_MENTIONS.format(
@@ -67,8 +91,12 @@ class KickUsers(Library):
 
         await toolkit.messages.send(package, response)
 
-    @callback(KickCommand)
+    @callback(AdminKickCommand)
     async def kick_process(self, toolkit, package):
+        """
+        Processing kick of users that mentioned in command message
+        """
+
         user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
 
         user_list = await toolkit.get_chat_members(package.peer_id)
@@ -81,7 +109,7 @@ class KickUsers(Library):
             if user_id in user_list and user_id not in admin_list:
                 await self.kick_user(toolkit, package.peer_id, user_id)
                 continue
-            
+
             user_parent = await toolkit.create_mention(user_id, None, NameCases.GEN)
 
             if user_id not in user_list:

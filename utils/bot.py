@@ -1,3 +1,7 @@
+"""
+Copyright 2023 kensoi
+"""
+
 import os
 
 from vkbotkit import Bot
@@ -10,7 +14,7 @@ switch_logger_level = {
 }
 
 
-async def bot(debug_mode = False):
+async def start_bot(debug_mode = False):
     """
     Init bot and start polling with VKBotKit
 
@@ -23,7 +27,7 @@ async def bot(debug_mode = False):
     bot_id = os.environ.get('BOT_ID', '0')
 
     bot = Bot(token, int(bot_id))
-        
+
     # Configure logger
 
     log_to_file = True

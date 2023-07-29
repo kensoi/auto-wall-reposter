@@ -10,11 +10,16 @@ from assets.utils.init import init
 
 @init
 class LengthLimit(Filter):
+    """
+    check for package's items' count
+    """
+
     async def check(self, _, package):
-        if "items" not in package.raw:
-            return
-        
-        return len(package.items) == 3
+        """
+        Check method
+        """
+
+        return "items" in package.raw and len(package.items) == 3
 
 ShortLink=IsCommand(["сократить"])
 

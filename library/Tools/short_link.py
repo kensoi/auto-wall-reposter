@@ -10,21 +10,33 @@ from .filters import ShortLinkArgsTrouble, ShortLinkArgs
 
 
 class ShortLink(Library):
+    """
+    Shorting link method
+    """
+
     @callback(ShortLinkArgsTrouble)
     async def help(self, toolkit, package):
-        with SHORT_LINK_HELP.format(
-            bot_mention = repr(package.items[0]),
-            command = repr(package.items[1]),
-        ) as response:
+        """
+        package items limit error reaction
+        """
+
+        bot_mention = repr(package.items[0])
+        command = repr(package.items[1])
+
+        with SHORT_LINK_HELP.format(bot_mention = bot_mention, command = command) as response:
             await toolkit.messages.send(package, response)
 
     @callback(ShortLinkArgs)
     async def short_response(self, toolkit, package):
+        """
+        shorting process handler
+        """
+
         user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
         link = await toolkit.api.utils.getShortLink(url = package.items[2])
 
         with SHORTING_RESULT.format(
-            user_mention = repr(user_mention), 
+            user_mention = repr(user_mention),
             link = link.short_url
         ) as response:
             await toolkit.messages.send(package, response)

@@ -11,8 +11,13 @@ from .init import init
 
 @init
 class isBotAdmin(Filter):
+    """
+    check if is it bot admin
+    """
+
     async def check(self, _, package):
-        if "from_id" not in package.raw:
-            return
-        
-        return package.from_id == int(os.environ.get("BOT_ADMIN_ID"))
+        """
+        Check method
+        """
+
+        return "from_id" in package.raw and package.from_id == int(os.environ.get("BOT_ADMIN_ID"))
