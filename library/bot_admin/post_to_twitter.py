@@ -33,11 +33,12 @@ class TwitterPost(Library):
         try to post without message text or attachments
         """
 
-        with NO_ARGS_AT_COMMAND.format(
+        response = NO_ARGS_AT_COMMAND.format(
             bot_mention = repr(package.items[0]),
             command = package.items[1]
-        ) as response:
-            await toolkit.messages.send(package, response)
+        )
+        
+        await toolkit.messages.send(package, response)
 
     @callback(TWNotBotAdmin)
     async def unknown_user(self, toolkit, package):
@@ -55,7 +56,6 @@ class TwitterPost(Library):
 
         tweet_result = SUCCESS_REPOST_TWITTER
         result_type = LogLevel.DEBUG
-
         channel_notification = " ".join(package.items[2:])
 
         try:

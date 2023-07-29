@@ -24,9 +24,9 @@ class UsefulLinks(Library):
 
         link = os.environ.get("RULES_LINK")
         user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
+        response = RULES_VECTOR.format(user_mention = user_mention, link = link)
 
-        with RULES_VECTOR.format(user_mention = user_mention, link = link) as response:
-            await toolkit.messages.send(package, response)
+        await toolkit.messages.send(package, response)
 
     @callback(HelpCommand)
     async def help(self, toolkit, package):
@@ -36,6 +36,6 @@ class UsefulLinks(Library):
 
         link = os.environ.get("COMMANDS_LINK")
         user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
-
-        with COMMANDS_VECTOR.format(user_mention = user_mention, link = link) as response:
-            await toolkit.messages.send(package, response)
+        response = COMMANDS_VECTOR.format(user_mention = user_mention, link = link)
+        
+        await toolkit.messages.send(package, response)

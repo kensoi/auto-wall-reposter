@@ -34,13 +34,12 @@ class Reposter(Library):
         result_type = LogLevel.DEBUG
 
         post_id = f"wall{package.owner_id}_{package.id}"
-
         post_link = f"https://vk.com/{post_id}"
+        notification = TELEGRAM_CHANNEL_NOTIFICATION.format(post_link=post_link)
 
         try:
             await tweet(toolkit, package.text, package.attachments)
-            with TELEGRAM_CHANNEL_NOTIFICATION.format(post_link=post_link) as notification:
-                await post_message(notification)
+            await post_message(notification)
 
         except ReadTimeout as exception:
             tweet_result = EXCEPTION_MESSAGE.format(exception=exception)

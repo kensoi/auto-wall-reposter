@@ -102,8 +102,8 @@ class KickUsers(Library):
         user_list = await toolkit.get_chat_members(package.peer_id)
         admin_list = await toolkit.get_chat_admins(package.peer_id)
 
-        with KICK_PROCESS_START.format(user_mention = user_mention) as response:
-            await toolkit.messages.send(package, response)
+        response = KICK_PROCESS_START.format(user_mention = user_mention)
+        await toolkit.messages.send(package, response)
 
         for user_id in self.get_users_to_kick(package):
             if user_id in user_list and user_id not in admin_list:
@@ -113,11 +113,11 @@ class KickUsers(Library):
             user_parent = await toolkit.create_mention(user_id, None, NameCases.GEN)
 
             if user_id not in user_list:
-                with KICK_FAIL_USER_NOT_EXIST.format(user_parent=user_parent) as response:
-                    await toolkit.messages.send(package, response)
+                response = KICK_FAIL_USER_NOT_EXIST.format(user_parent=user_parent)
+                await toolkit.messages.send(package, response)
 
             if user_id in admin_list:
-                with KICK_FAIL_USER_ADMIN.format(user_parent=user_parent) as response:
-                    await toolkit.messages.send(package, response)
+                response = KICK_FAIL_USER_ADMIN.format(user_parent=user_parent)
+                await toolkit.messages.send(package, response)
 
         await toolkit.messages.send(package, KICK_PROCESS_END)

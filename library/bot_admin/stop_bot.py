@@ -36,5 +36,6 @@ class StopBot(Library):
         """
 
         user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
-        with USER_IS_NOT_BOT_ADMIN.format(user_mention=user_mention) as response:
-            await toolkit.messages.send(package, response)
+        response = USER_IS_NOT_BOT_ADMIN.format(user_mention=user_mention)
+        
+        await toolkit.messages.send(package, response)
