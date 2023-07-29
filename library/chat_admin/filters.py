@@ -19,6 +19,9 @@ class WithMentions(Filter):
         check function
         """
 
+        if "mentions" not in package.raw:
+            return
+
         if len(package.mentions) > 1:
             return True
 
