@@ -1,0 +1,34 @@
+"""
+Copyright 2023 kensoi
+"""
+
+from vkbotkit.objects.filters.events import WhichEvent, Events
+from vkbotkit.objects.filters.message import IsUserChat
+from vkbotkit.objects.filters.filter import Filter
+from vkbotkit.objects.mention import Mention
+from assets.utils.init import init
+
+
+@init
+class NotCommand(Filter):
+    """
+    NotCommand filter
+    """
+
+    async def check(self, toolkit, package) -> bool | None:
+        """
+        Check method
+        """
+
+        if package.type is not Events.MESSAGE_NEW:
+            return True
+
+        if isinstance(package.items[0], Mention):
+            if int(package.items[0]) != int(await toolkit.get_my_mention()):
+                return True
+
+        elif package.items[0].lower() not in toolkit.bot_mentions:
+            return True
+
+KeyboardReply = WhichEvent([Events.MESSAGE_EVENT])
+NewMessageFromPrivate = IsUserChat & NotCommand
