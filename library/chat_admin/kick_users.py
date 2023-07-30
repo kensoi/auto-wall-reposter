@@ -2,11 +2,14 @@
 Copyright 2023 kensoi
 """
 
+import os
+
 from vkbotkit.objects import Library, callback
 from vkbotkit.objects.enums import NameCases
+from vkbotkit.objects.exceptions import MethodError
 
 from .filters import (
-    NoAdminRights, NoBotAdminRights, NoMentions, AdminKickCommand
+    NoAdminRights, NoMentions, AdminKickCommand
 )
 from .templates import (
     NO_ADMIN_RIGHTS,
@@ -23,6 +26,21 @@ class KickUsers(Library):
     """
     Admin kick users
     """
+
+    async def no_bot_rights(self, toolkit, package):
+        """
+        bot has not admin rights
+        """
+
+        user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
+        link = os.environ.get("INSTALL_BOT_ADMIN_RIGHTS")
+
+        response = NO_BOT_ADMIN_RIGHTS.format(
+            user_mention = user_mention,
+            link = link
+        )
+
+        return await toolkit.messages.send(package, response)
 
     def get_users_to_kick(self, package):
         """
@@ -63,20 +81,6 @@ class KickUsers(Library):
 
         await toolkit.messages.send(package, response)
 
-    @callback(NoBotAdminRights)
-    async def no_bot_admin_rights(self, toolkit, package):
-        """
-        Bot has no rights to kick
-        """
-        user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
-
-        response = NO_BOT_ADMIN_RIGHTS.format(
-            user_mention = user_mention
-        )
-
-        await toolkit.messages.send(package, response)
-
-
     @callback(NoMentions)
     async def no_mentions(self, toolkit, package):
         """
@@ -97,18 +101,21 @@ class KickUsers(Library):
         Processing kick of users that mentioned in command message
         """
 
+
+        try:
+            user_list = await toolkit.get_chat_members(package.peer_id)
+            admin_list = await toolkit.get_chat_admins(package.peer_id)
+
+        except MethodError:
+            return await self.no_bot_rights(toolkit, package)
+
         user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
-
-        user_list = await toolkit.get_chat_members(package.peer_id)
-        admin_list = await toolkit.get_chat_admins(package.peer_id)
-
         response = KICK_PROCESS_START.format(user_mention = user_mention)
         await toolkit.messages.send(package, response)
 
         for user_id in self.get_users_to_kick(package):
             if user_id in user_list and user_id not in admin_list:
                 await self.kick_user(toolkit, package.peer_id, user_id)
-                continue
 
             user_parent = await toolkit.create_mention(user_id, None, NameCases.GEN)
 
