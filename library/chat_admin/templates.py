@@ -25,3 +25,14 @@ KICK_FAIL_USER_NOT_EXIST = """
 KICK_PROCESS_END = """
 Исключение завершено
 """
+USER_POINT = """
+@{screen_name}"""
+ADMIN_LIST_TEMPLATE = """
+Вот список администраторов в этом чате:{parsed_list}
+"""
+BOT_LIST_TEMPLATE = """
+Вот список ботов в этом чате:{parsed_list}
+"""
+ONLINE_LIST_TEMPLATE = """
+Вот список онлайн участников в этом чате:{parsed_list}
+"""

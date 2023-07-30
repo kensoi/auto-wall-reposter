@@ -3,7 +3,7 @@ Copyright 2023 kensoi
 """
 
 from vkbotkit.objects.filters.filter import Filter, Not
-from vkbotkit.objects.filters.message import IsCommand, IsBotAdmin, IsUserAdmin, IsUserChat
+from vkbotkit.objects.filters.message import IsCommand, IsUserAdmin, IsUserChat
 
 from assets.utils.init import init
 
@@ -36,7 +36,14 @@ class WithMentions(Filter):
 KickCommand = IsCommand(["кик", "кикнуть", "kick"])
 
 NotMultiuserChat = KickCommand & Not(IsUserChat)
-NoBotAdminRights = KickCommand & IsUserChat & Not(IsBotAdmin)
-NoAdminRights = KickCommand & IsUserChat & IsBotAdmin & Not(IsUserAdmin)
-NoMentions = KickCommand & IsUserChat & IsBotAdmin & IsUserAdmin & Not(WithMentions)
-AdminKickCommand = KickCommand & IsBotAdmin & IsUserAdmin & WithMentions
+NoAdminRights = KickCommand & IsUserChat & Not(IsUserAdmin)
+NoMentions = KickCommand & IsUserChat & IsUserAdmin & Not(WithMentions)
+AdminKickCommand = KickCommand & IsUserAdmin & WithMentions
+
+AllAdminsCommand = IsCommand(["админы", "администрация", "admin", "admins"], only_without_args=True)
+AllBotsCommand = IsCommand(["бот", "боты", "bot", "bots"], only_without_args=True)
+AllOnlineCommand = IsCommand(["онлайн", "online"], only_without_args=True)
+
+AllAdminsCommandWRights = AllAdminsCommand
+AllBotsCommandWRights = AllBotsCommand
+AllOnlineCommandWRights = AllOnlineCommand
