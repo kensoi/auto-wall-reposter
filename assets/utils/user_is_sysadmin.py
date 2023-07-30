@@ -2,15 +2,14 @@
 Copyright 2023 kensoi
 """
 
-import os
-
 from vkbotkit.objects.filters.filter import Filter
 
+from .sys_admin_tools import SysAdminTools
 from .init import init
 
 
 @init
-class isBotAdmin(Filter):
+class UserIsSysAdmin(Filter):
     """
     check if is it bot admin
     """
@@ -20,4 +19,5 @@ class isBotAdmin(Filter):
         Check method
         """
 
-        return "from_id" in package.raw and package.from_id == int(os.environ.get("BOT_ADMIN_ID"))
+        return "from_id" in package.raw and \
+            package.from_id in SysAdminTools.list
