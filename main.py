@@ -13,7 +13,6 @@ from vkbotkit.objects.enums import LogLevel
 
 
 load_dotenv()
-loop = asyncio.get_event_loop()
 debug_mode = os.environ.get('DEBUG_MODE') == "True" or "-d" in sys.argv
 
 async def start_polling():
