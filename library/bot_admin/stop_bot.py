@@ -2,6 +2,7 @@
 Copyright 2023 kensoi
 """
 
+from vkbotkit.framework.toolkit import ToolKit
 from vkbotkit.objects import Library
 from vkbotkit.objects.callback import callback
 from vkbotkit.objects.enums import NameCases
@@ -33,10 +34,10 @@ class StopBot(Library):
         await toolkit.messages.send(package, response)
 
     @callback(BotAdminQuit)
-    async def stop_bot(self, toolkit, package):
+    async def stop_bot(self, toolkit:ToolKit, package):
         """
         stop poll
         """
-        print(package.peer_id)
+
         await toolkit.messages.send(package, QUIT_MESSAGE)
-        quit()
+        toolkit.stop_polling()
