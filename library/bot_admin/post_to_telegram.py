@@ -11,6 +11,7 @@ from vkbotkit.objects.enums import LogLevel
 from vkbotkit.objects.callback import callback
 
 from assets.telegram.api import post_message
+from assets.utils.sys_admin_tools import SysAdminTools
 
 from .filters import (
     TGBotAdminPost,
@@ -21,7 +22,8 @@ from .templates import (
     NO_ARGS_AT_COMMAND,
     USER_IS_NOT_BOT_ADMIN,
     SUCCESS_REPOST_TELEGRAM,
-    EXCEPTION_MESSAGE
+    EXCEPTION_MESSAGE,
+    TABOO_REPOST
 )
 
 
@@ -56,18 +58,21 @@ class TelegramPost(Library):
         User with bot-admin rights send message to post at telegram channel
         """
 
+        if not SysAdminTools.is_telegram_enabled:
+            return await toolkit.messages.send(package, TABOO_REPOST)
+
         result_type = LogLevel.DEBUG
-        channel_id = os.environ.get("TELEGRAM_CHANNEL_ID")
         channel_notification = " ".join(package.items[2:])
-        tweet_result = SUCCESS_REPOST_TELEGRAM.format(channel_id = channel_id)
+        send_result = SUCCESS_REPOST_TELEGRAM.format(channel_id = channel_id)
 
         try:
             await post_message(channel_notification, package.attachments)
+            channel_id = os.environ.get("TELEGRAM_CHANNEL_ID")
 
         except ClientResponseError as exception:
-            tweet_result = EXCEPTION_MESSAGE.format(exception=exception )
+            send_result = EXCEPTION_MESSAGE.format(exception=exception )
             result_type = LogLevel.ERROR
 
         finally:
-            toolkit.log(tweet_result, log_level=result_type)
-            await toolkit.messages.send(package, tweet_result)
+            toolkit.log(send_result, log_level=result_type)
+            await toolkit.messages.send(package, send_result)

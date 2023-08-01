@@ -27,15 +27,16 @@ class StopBot(Library):
         User has no bot-admin rights
         """
 
-        await toolkit.messages.send(package, QUIT_MESSAGE)
+        user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
+        response = USER_IS_NOT_BOT_ADMIN.format(user_mention=user_mention)
+
+        await toolkit.messages.send(package, response)
 
     @callback(BotAdminQuit)
     async def stop_bot(self, toolkit, package):
         """
         stop poll
         """
-
-        user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
-        response = USER_IS_NOT_BOT_ADMIN.format(user_mention=user_mention)
-        
-        await toolkit.messages.send(package, response)
+        print(package.peer_id)
+        await toolkit.messages.send(package, QUIT_MESSAGE)
+        quit()

@@ -19,5 +19,4 @@ class UserIsSysAdmin(Filter):
         Check method
         """
 
-        return "from_id" in package.raw and \
-            package.from_id in SysAdminTools.list
+        return "from_id" in package.raw and package.from_id in SysAdminTools.list

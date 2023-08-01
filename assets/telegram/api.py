@@ -119,7 +119,7 @@ async def post_message(message: typing.Optional[str]=None, attachments: typing.O
 
     channel_id = os.environ.get("TELEGRAM_CHANNEL_ID")
 
-    if len(attachments) == 0:
+    if not attachments or attachments == []:
         await Client.post(channel_id, message)
         return
 

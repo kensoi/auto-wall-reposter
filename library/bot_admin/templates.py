@@ -11,6 +11,7 @@ USER_IS_NOT_BOT_ADMIN = """
 """
 SUCCESS_REPOST_TWITTER = "Твит успешно создан"
 SUCCESS_REPOST_TELEGRAM = "Сообщение успешно отправлено в ваше ТГК - https://t.me/{channel_id}"
+TABOO_REPOST = "Эта команда запрещена на уровне системы."
 EXCEPTION_MESSAGE = """
 В ходе выполнения команды вышло исключение: {exception}
 """

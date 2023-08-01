@@ -11,8 +11,8 @@ quit_set = ["quit", "выход"]
 post_to_telegram = ["post", "пост"]
 post_to_twitter = ["tweet", "твитнуть", "твит"]
 
-BotAdminQuit = UserIsSysAdmin & IsCommand(quit_set, only_without_args=True)
-NotBotAdminQuit = Not(UserIsSysAdmin) & IsCommand(quit_set, only_without_args=True)
+BotAdminQuit = UserIsSysAdmin & IsCommand(quit_set)
+NotBotAdminQuit = Not(UserIsSysAdmin) & IsCommand(quit_set)
 
 TGBotAdminPost = UserIsSysAdmin & IsCommand(post_to_telegram, only_with_args=True)
 TGNotBotAdmin = Not(UserIsSysAdmin) & IsCommand(post_to_telegram)
