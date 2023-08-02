@@ -16,6 +16,7 @@ from .filters import NewPost
 from .templates import (
     VK_CHAT_NOTIFICATION,
     TELEGRAM_CHANNEL_NOTIFICATION,
+    TELEGRAM_CHANNEL_NOTIFICATION_DONUT,
     SUCCESS_REPOST,
     EXCEPTION_MESSAGE
 )
@@ -37,7 +38,11 @@ class Reposter(Library):
 
         post_id = f"wall{package.owner_id}_{package.id}"
         post_link = f"https://vk.com/{post_id}"
-        notification = TELEGRAM_CHANNEL_NOTIFICATION.format(post_link=post_link)
+
+        notification = TELEGRAM_CHANNEL_NOTIFICATION
+
+        if package.donut.is_donut:
+            notification = TELEGRAM_CHANNEL_NOTIFICATION_DONUT
 
         try:
             await toolkit.api.messages.send(
@@ -47,11 +52,11 @@ class Reposter(Library):
                 message=VK_CHAT_NOTIFICATION
             )
 
-            if SysAdminTools.is_x_enabled:
+            if SysAdminTools.is_x_enabled and not package.donut.is_donut:
                 await tweet(toolkit, package.text, package.attachments)
 
             if SysAdminTools.is_telegram_enabled:
-                await post_message(notification)
+                await post_message(notification.format(post_link=post_link))
 
         except ReadTimeout as exception:
             tweet_result = EXCEPTION_MESSAGE.format(exception=exception)

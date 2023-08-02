@@ -63,11 +63,11 @@ class TelegramPost(Library):
 
         result_type = LogLevel.DEBUG
         channel_notification = " ".join(package.items[2:])
+        channel_id = os.environ.get("TELEGRAM_CHANNEL_ID")
         send_result = SUCCESS_REPOST_TELEGRAM.format(channel_id = channel_id)
 
         try:
             await post_message(channel_notification, package.attachments)
-            channel_id = os.environ.get("TELEGRAM_CHANNEL_ID")
 
         except ClientResponseError as exception:
             send_result = EXCEPTION_MESSAGE.format(exception=exception )
