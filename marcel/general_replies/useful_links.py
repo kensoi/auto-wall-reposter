@@ -34,7 +34,7 @@ class UsefulLinks(Library):
         Command topic
         """
 
-        link = os.environ.get("COMMANDS_LINK")
+        link = os.environ.get("COMMAND_GUIDE_LINK")
         user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
         response = COMMANDS_VECTOR.format(user_mention = user_mention, link = link)
         

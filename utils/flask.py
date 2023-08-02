@@ -21,7 +21,7 @@ def set_home_page():
     global page
 
     link_to_bot = "https://vk.com/{screen_name}".format(
-        screen_name = os.environ.get("BOT_SCREEN_NAME")
+        screen_name = os.environ.get("MARCEL_BOT_SCREEN_NAME")
     )
 
     form = """
@@ -42,7 +42,7 @@ def set_home_page():
             {form}
         </center>
     """.format(
-        screen_name = os.environ.get("BOT_SCREEN_NAME"),
+        screen_name = os.environ.get("MARCEL_BOT_SCREEN_NAME"),
         form = form,
     )
 

@@ -20,7 +20,7 @@ class SysAdminTools:
 
     def __init__(self):
         self.list = []
-        self.is_x_enabled = os.environ.get("IS_TWITTER_ENABLED", "True") == "True"
+        self.is_x_enabled = os.environ.get("IS_X_ENABLED", "True") == "True"
         self.is_telegram_enabled = os.environ.get("IS_TELEGRAM_ENABLED", "True") == "True"
-        self.log_chat = int(os.environ.get("CHAT_TO_LOG", self.list[0]))
-        self.repost_chat = int(os.environ.get("CHAT_TO_REPOST", self.list[0]))
+        self.log_chat = int(os.environ.get("CHAT_TO_LOG"))
+        self.repost_chat = int(os.environ.get("CHAT_TO_REPOST"))

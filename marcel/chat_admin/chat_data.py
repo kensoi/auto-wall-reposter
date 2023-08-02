@@ -31,7 +31,7 @@ class ChatData(Library):
         """
 
         user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
-        link = os.environ.get("INSTALL_BOT_ADMIN_RIGHTS")
+        link = os.environ.get("INSTALL_GUIDE_LINK")
 
         response = NO_BOT_ADMIN_RIGHTS.format(
             user_mention = user_mention,

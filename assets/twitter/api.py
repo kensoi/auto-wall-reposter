@@ -30,16 +30,16 @@ def client():
     X client
     """
 
-    TWITTER_API_KEY = os.environ.get("TWITTER_API_KEY")
-    TWITTER_API_KEY_SECRET = os.environ.get("TWITTER_API_KEY_SECRET")
-    TWITTER_BEARER_KEY = os.environ.get("TWITTER_BEARER_TOKEN")
-    TWITTER_ACCESS_TOKEN = os.environ.get("TWITTER_ACCESS_TOKEN")
-    TWITTER_ACCESS_TOKEN_SECRET = os.environ.get("TWITTER_ACCESS_TOKEN_SECRET")
+    X_API_KEY = os.environ.get("X_API_KEY")
+    X_API_KEY_SECRET = os.environ.get("X_API_KEY_SECRET")
+    X_BEARER_KEY = os.environ.get("X_BEARER_TOKEN")
+    X_ACCESS_TOKEN = os.environ.get("X_ACCESS_TOKEN")
+    X_SECRET_TOKEN = os.environ.get("X_SECRET_TOKEN")
 
     return tweepy.Client(
-        TWITTER_BEARER_KEY,
-        TWITTER_API_KEY, TWITTER_API_KEY_SECRET,
-        TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET
+        X_BEARER_KEY,
+        X_API_KEY, X_API_KEY_SECRET,
+        X_ACCESS_TOKEN, X_SECRET_TOKEN
     )
 
 @init
@@ -48,14 +48,14 @@ def api():
     X API
     """
 
-    TWITTER_API_KEY = os.environ.get("TWITTER_API_KEY")
-    TWITTER_API_KEY_SECRET = os.environ.get("TWITTER_API_KEY_SECRET")
-    TWITTER_ACCESS_TOKEN = os.environ.get("TWITTER_ACCESS_TOKEN")
-    TWITTER_ACCESS_TOKEN_SECRET = os.environ.get("TWITTER_ACCESS_TOKEN_SECRET")
+    X_API_KEY = os.environ.get("X_API_KEY")
+    X_API_KEY_SECRET = os.environ.get("X_API_KEY_SECRET")
+    X_ACCESS_TOKEN = os.environ.get("X_ACCESS_TOKEN")
+    X_SECRET_TOKEN = os.environ.get("X_SECRET_TOKEN")
 
     auth = tweepy.OAuth1UserHandler(
-        TWITTER_API_KEY, TWITTER_API_KEY_SECRET,
-        TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET
+        X_API_KEY, X_API_KEY_SECRET,
+        X_ACCESS_TOKEN, X_SECRET_TOKEN
     )
 
     return tweepy.API(auth)

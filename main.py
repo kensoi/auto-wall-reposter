@@ -7,66 +7,47 @@ import os
 import sys
 from dotenv import load_dotenv
 from utils.flask import keep_alive
+from utils.bot import create_bot, parse_poll
 
-from vkbotkit import Bot, PluginManager
-from vkbotkit.objects.enums import LogLevel
-
-from assets.utils.init import init
 
 load_dotenv()
 debug_mode = os.environ.get('DEBUG_MODE') == "True" or "-d" in sys.argv
+
+from assets.utils.init import init
+
+@init
+def marcel_bot():
+    """
+    marcel bot
+    """
+
+    marcel_access_token = os.environ.get('VK_MARCEL_ACCESS_TOKEN')
+    marcel_bot_id = int(os.environ.get('MARCEL_BOT_ID'))
+    marcel_mentions = os.environ.get("BOT_MENTIONS", "").split(" ")
+
+    return create_bot(marcel_access_token, marcel_bot_id, debug_mode, marcel_mentions)
+
+@init
+def miuruwa_bot():
+    """
+    miuruwa bot
+    """
+
+    miuruwa_access_token = os.environ.get('VK_WALL_ACCESS_TOKEN')
+    miuruwa_bot_id = int(os.environ.get('WALL_COMMUNITY_ID'))
+
+    return create_bot(miuruwa_access_token, miuruwa_bot_id, debug_mode)
 
 async def start_polling():
     """
     parse for packages from server while bot.toolkit.is_polling
     """
 
-    # Marcel Bot
-
-    canary_token = os.environ.get('ACCESS_TOKEN_CANARY')
-    canary_bot_id = int(os.environ.get('BOT_ID_CANARY'))
-
-    canary_bot = Bot(canary_token, canary_bot_id)
-
-    # Miuruwa Poll Bot
-
-    miuruwa_token = os.environ.get('ACCESS_TOKEN_MIURUWA')
-    miuruwa_bot_id = int(os.environ.get('BOT_ID_MIURUWA'))
-
-    miuruwa_bot = Bot(miuruwa_token, miuruwa_bot_id)
-
-    log_level = LogLevel.DEBUG if debug_mode else LogLevel.INFO
-
-    @init
-    async def poll_miuruwa():
-        """
-        Отслеживатель событий из Miuruwa ~* в ВК
-        - все новые посты отсылает в беседу
-        """
-        miuruwa_bot.toolkit.configure_logger(log_level, True, True)
-
-        miuruwa_plugin_manager = PluginManager(canary_bot.toolkit)
-        miuruwa_plugin_manager.import_library("miuruwa")
-
-        async for package in miuruwa_bot.poll_server():
-            await miuruwa_plugin_manager.handle(package)
-
-    @init
-    async def poll_marcel():
-        """
-        Отслеживатель событий из Менеджера Кани в ВК
-        - все новые посты отсылает в беседу
-        """
-        canary_bot.toolkit.bot_mentions = os.environ.get("BOT_MENTIONS", "").split(" ")
-        canary_bot.toolkit.configure_logger(log_level, True, True)
-
-        canary_plugin_manager = PluginManager(canary_bot.toolkit)
-        canary_plugin_manager.import_library("marcel")
-
-        async for package in canary_bot.poll_server():
-            await canary_plugin_manager.handle(package)
+    poll_marcel = parse_poll(marcel_bot, marcel_bot, "marcel")
+    poll_miuruwa = parse_poll(miuruwa_bot, marcel_bot, "miuruwa")
 
     # Параллельное отслеживание событий в обоих группах.
+
     await asyncio.gather(poll_miuruwa, poll_marcel)
 
 if __name__ == "__main__":
