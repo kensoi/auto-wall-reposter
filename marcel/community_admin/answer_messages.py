@@ -6,7 +6,7 @@ from vkbotkit.objects import Library, callback
 from vkbotkit.objects.enums import NameCases
 from vkbotkit.utils import gen_random
 
-from assets.utils.sys_admin_tools import SysAdminTools
+from assets.utils.user_is_sysadmin import UserIsSysAdmin
 
 from .filters import (
     KeyboardReply,
@@ -25,21 +25,18 @@ class PrivateMessagesNode(Library):
     Node to work with private messages
     """
 
-    @callback(NewMessageFromPrivate)
+    @callback(NewMessageFromPrivate & UserIsSysAdmin)
     async def got_message_from_user(self, toolkit, package):
         """
         got a message from user that is not sys-admin
         """
-
-        if package.from_id in SysAdminTools.list:
-            return
 
         user_mention = await toolkit.create_mention(package.from_id, None, NameCases.GEN)
         keyboard = get_keyboard_with_actions(package.from_id)
 
         await toolkit.api.messages.send(
             random_id = gen_random(),
-            peer_ids = ", ".join(map(str, SysAdminTools.list)),
+            peer_ids = ", ".join(map(str, UserIsSysAdmin.admin_list)),
             message = NOTIFICATION_NEW_MESSAGE.format(
                 from_id = repr(user_mention),
                 text = package.text
