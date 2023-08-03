@@ -86,14 +86,14 @@ class KickUsers(Library):
         """
         Command without mentions
         """
-
         user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
 
         response = NO_MENTIONS.format(
-            user_mention = user_mention
+            user_mention = repr(user_mention)
         )
 
         await toolkit.messages.send(package, response)
+
 
     @callback(AdminKickCommand)
     async def kick_process(self, toolkit, package):

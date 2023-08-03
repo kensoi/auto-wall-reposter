@@ -21,7 +21,7 @@ class LengthLimit(Filter):
 
         return "items" in package.raw and len(package.items) == 3
 
-ShortLink=IsCommand(["сократить"])
+ShortLink=IsCommand(["сократить", "сократи", "short"])
 
 ShortLinkArgsTrouble = ShortLink & Not(LengthLimit)
 ShortLinkArgs = ShortLink & LengthLimit

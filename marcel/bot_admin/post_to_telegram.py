@@ -7,7 +7,7 @@ import os
 from aiohttp.client_exceptions import ClientResponseError
 
 from vkbotkit.objects import Library
-from vkbotkit.objects.enums import LogLevel
+from vkbotkit.objects.enums import LogLevel, NameCases
 from vkbotkit.objects.callback import callback
 
 from assets.telegram.api import post_message
@@ -39,7 +39,7 @@ class TelegramPost(Library):
         """
 
         response = NO_ARGS_AT_COMMAND.format(
-            bot_mention = repr(package.items[0]),
+            bot_mention = package.items[0],
             command = package.items[1]
         )
         await toolkit.messages.send(package, response)
@@ -49,8 +49,10 @@ class TelegramPost(Library):
         """
         User has no bot-admin rights
         """
+        user_mention = await toolkit.create_mention(package.from_id, None, NameCases.NOM)
+        response = USER_IS_NOT_BOT_ADMIN.format(user_mention=user_mention)
 
-        await toolkit.messages.send(package, USER_IS_NOT_BOT_ADMIN)
+        await toolkit.messages.send(package, response)
 
     @callback(TGBotAdminPost)
     async def repost(self, toolkit, package):

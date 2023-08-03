@@ -4,7 +4,9 @@ Copyright 2023 kensoi
 
 
 NO_ARGS_AT_COMMAND = """
-Команда работает в формате {bot_mention} {command} {сообщение любой длины}
+Команда работает в следующем формате:
+
+"{bot_mention} {command} [сообщение любой длины]"
 """
 USER_IS_NOT_BOT_ADMIN = """
 {user_mention}, вас нет полномочий для выполнения этой команды.
