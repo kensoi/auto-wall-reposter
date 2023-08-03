@@ -6,8 +6,6 @@ from vkbotkit.objects import Library, callback
 from vkbotkit.objects.enums import NameCases
 from vkbotkit.utils import gen_random
 
-from assets.utils.user_is_sysadmin import UserIsSysAdmin
-
 from .filters import (
     KeyboardReply,
     NewMessageFromPrivate
