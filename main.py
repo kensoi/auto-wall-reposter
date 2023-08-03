@@ -13,10 +13,7 @@ from utils.bot import create_bot, parse_poll
 load_dotenv()
 debug_mode = os.environ.get('DEBUG_MODE') == "True" or "-d" in sys.argv
 
-from assets.utils.init import init
-
-@init
-def marcel_bot():
+async def create_marcel_bot():
     """
     marcel bot
     """
@@ -27,8 +24,7 @@ def marcel_bot():
 
     return create_bot(marcel_access_token, marcel_bot_id, debug_mode, marcel_mentions)
 
-@init
-def miuruwa_bot():
+async def create_miuruwa_bot():
     """
     miuruwa bot
     """
@@ -42,6 +38,8 @@ async def start_polling():
     """
     parse for packages from server while bot.toolkit.is_polling
     """
+    marcel_bot = await create_marcel_bot()
+    miuruwa_bot = await create_miuruwa_bot()
 
     poll_marcel = parse_poll(marcel_bot, marcel_bot, "marcel")
     poll_miuruwa = parse_poll(miuruwa_bot, marcel_bot, "miuruwa")
