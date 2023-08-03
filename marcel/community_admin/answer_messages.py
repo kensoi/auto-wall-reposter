@@ -25,7 +25,7 @@ class PrivateMessagesNode(Library):
     Node to work with private messages
     """
 
-    @callback(NewMessageFromPrivate & UserIsSysAdmin)
+    @callback(NewMessageFromPrivate)
     async def got_message_from_user(self, toolkit, package):
         """
         got a message from user that is not sys-admin

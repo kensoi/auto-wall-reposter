@@ -24,8 +24,11 @@ class NotCommand(Filter):
             return True
 
         if isinstance(package.items[0], Mention):
-            if int(package.items[0]) != int(await toolkit.get_my_mention()):
-                return True
+            if toolkit.bot_is_group:
+                return int(package.items[0]) != -toolkit.bot_id
+            
+            return int(package.items[0]) != toolkit.bot_id
+            
 
         elif package.items[0].lower() not in toolkit.bot_mentions:
             return True
