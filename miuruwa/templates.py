@@ -10,7 +10,7 @@ TELEGRAM_CHANNEL_NOTIFICATION = """
 Внимание всем! В группе новый пост: {post_link}
 """
 TELEGRAM_CHANNEL_NOTIFICATION_DONUT = """
-Внимание всем! В группе новый пост, но я вам его не покажу: у вас не оформлена подписка VK Donut
+Внимание всем подписчикам VK Donut! Для вас новый пост:
 {post_link}
 """
 SUCCESS_REPOST = "Сообщение успешно отправлено."

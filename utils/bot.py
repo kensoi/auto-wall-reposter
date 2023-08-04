@@ -33,10 +33,10 @@ async def parse_poll(package_bot, parser_bot, library_name, debug_mode=False):
     async for package in package_bot.poll_server():
         if package.type == Events.MESSAGE_NEW:
             if debug_mode:
-                if package.peer_id != SysAdminTools.log_chat:
+                if package.peer_id != SysAdminTools.beta_chat:
                     continue
             else:
-                if package.peer_id == SysAdminTools.log_chat:
+                if package.peer_id == SysAdminTools.beta_chat:
                     continue
 
         await plugin_manager.handle(package)
