@@ -6,12 +6,13 @@ import asyncio
 import os
 import sys
 from dotenv import load_dotenv
-from utils.flask import keep_alive
-from utils.bot import create_bot, parse_poll
 
 
 load_dotenv()
 debug_mode = os.environ.get('DEBUG_MODE') == "True" or "-d" in sys.argv
+
+from utils.flask import keep_alive
+from utils.bot import create_bot, parse_poll
 
 async def create_marcel_bot():
     """
@@ -38,15 +39,20 @@ async def start_polling():
     """
     parse for packages from server while bot.toolkit.is_polling
     """
+    poll_tasks = []
     marcel_bot = await create_marcel_bot()
     miuruwa_bot = await create_miuruwa_bot()
 
-    poll_marcel = parse_poll(marcel_bot, marcel_bot, "marcel")
-    poll_miuruwa = parse_poll(miuruwa_bot, marcel_bot, "miuruwa")
+    poll_marcel = parse_poll(marcel_bot, marcel_bot, "marcel", debug_mode)
+    poll_tasks.append(poll_marcel)
+
+    if not debug_mode:
+        poll_miuruwa = parse_poll(miuruwa_bot, marcel_bot, "miuruwa", False)
+        poll_tasks.append(poll_miuruwa)
 
     # Параллельное отслеживание событий в обоих группах.
 
-    await asyncio.gather(poll_miuruwa, poll_marcel)
+    await asyncio.gather(*poll_tasks)
 
 if __name__ == "__main__":
     keep_alive(debug_mode)

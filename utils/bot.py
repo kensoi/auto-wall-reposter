@@ -3,7 +3,9 @@ Copyright 2023 kensoi
 """
 
 from vkbotkit import Bot, PluginManager
-from vkbotkit.objects.enums import LogLevel
+from vkbotkit.objects.enums import LogLevel, Events
+
+from assets.utils.sys_admin_tools import SysAdminTools
 
 def create_bot(access_token, bot_id, debug_mode, mentions=None):
     """
@@ -20,7 +22,7 @@ def create_bot(access_token, bot_id, debug_mode, mentions=None):
 
     return bot
 
-async def parse_poll(package_bot, parser_bot, library_name):
+async def parse_poll(package_bot, parser_bot, library_name, debug_mode=False):
     """
     parse
     """
@@ -29,4 +31,12 @@ async def parse_poll(package_bot, parser_bot, library_name):
     plugin_manager.import_library(library_name)
 
     async for package in package_bot.poll_server():
+        if package.type == Events.MESSAGE_NEW:
+            if debug_mode:
+                if package.peer_id != SysAdminTools.log_chat:
+                    continue
+            else:
+                if package.peer_id == SysAdminTools.log_chat:
+                    continue
+
         await plugin_manager.handle(package)
