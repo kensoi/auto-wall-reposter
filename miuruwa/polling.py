@@ -26,6 +26,10 @@ class Reposter(Library):
     """
     Lib that reposts new post to X and Telegram
     """
+    def format_post_test(text):
+        if len(text) > 128:
+            return text[:128] + "..."
+        return text
 
     @callback(NewPost)
     async def repost(self, toolkit, package):
@@ -39,12 +43,22 @@ class Reposter(Library):
         post_id = f"wall{package.owner_id}_{package.id}"
         post_link = f"https://vk.com/{post_id}"
 
-        notification = TELEGRAM_CHANNEL_NOTIFICATION
+        notification = TELEGRAM_CHANNEL_NOTIFICATION.format(post_link=post_link)
 
         if package.donut.is_donut:
-            notification = TELEGRAM_CHANNEL_NOTIFICATION_DONUT
+            notification = TELEGRAM_CHANNEL_NOTIFICATION_DONUT.format(
+                post_link=post_link,
+                description=self.format_post_test(package.text)
+            )
 
         try:
+            await toolkit.api.messages.send(
+                random_id = gen_random(),
+                peer_id = SysAdminTools.repost_hub,
+                attachment = post_id,
+                message=VK_CHAT_NOTIFICATION
+            )
+
             if SysAdminTools.is_x_enabled and not package.donut.is_donut:
                 await create_post(package.text, package.attachments)
 
