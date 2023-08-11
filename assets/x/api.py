@@ -60,7 +60,7 @@ def api():
 
     return tweepy.API(auth)
 
-async def upload_photo_on_twitter(attachment):
+async def upload_photo(attachment):
     """
     upload photo on X
     """
@@ -76,29 +76,29 @@ async def upload_photo_on_twitter(attachment):
 
     return media_object.media_id
 
-async def tweet(_, message: str, attachments=None):
+async def create_post(message: str, attachments=None):
     """
-    tweet post on X
+    create post on X
     """
 
     if not attachments:
-        return await run_in_executor(lambda _: client.create_tweet(text=message))
+        return await run_in_executor(lambda _: client.create_post(text=message))
 
     photo_attachments = list(filter(
         lambda item: item.type == "photo", attachments
     ))
 
     if len(photo_attachments) == 0:
-        return await run_in_executor(lambda _: client.create_tweet(text=message))
+        return await run_in_executor(lambda _: client.create_post(text=message))
 
     photo_attachments = photo_attachments[:min(len(photo_attachments),4)]
 
     media_ids = await asyncio.gather(*[
-        upload_photo_on_twitter(photo) for photo in photo_attachments
+        upload_photo(photo) for photo in photo_attachments
     ])
 
     await run_in_executor(
-        lambda _: client.create_tweet(
+        lambda _: client.create_post(
             text=message,
             media_ids=media_ids
         )

@@ -29,7 +29,7 @@ class Reposter(Library):
         Repost handler
         """
 
-        tweet_result = SUCCESS_REPOST
+        post_result = SUCCESS_REPOST
         result_type = LogLevel.DEBUG
 
         post_id = f"wall{package.owner_id}_{package.id}"
@@ -37,19 +37,19 @@ class Reposter(Library):
         try:
             await toolkit.api.messages.send(
                 random_id = gen_random(),
-                peer_id = SysAdminTools.repost_chat,
+                peer_id = SysAdminTools.repost_hub,
                 attachment = post_id,
                 message=VK_CHAT_NOTIFICATION
             )
 
         except ReadTimeout as exception:
-            tweet_result = EXCEPTION_MESSAGE.format(exception=exception)
+            post_result = EXCEPTION_MESSAGE.format(exception=exception)
             result_type = LogLevel.ERROR
 
         finally:
-            toolkit.log(tweet_result, log_level=result_type)
+            toolkit.log(post_result, log_level=result_type)
             await toolkit.api.messages.send(
                 random_id = gen_random(),
-                peer_id = SysAdminTools.log_chat,
-                message = tweet_result
+                peer_id = SysAdminTools.log_hub,
+                message = post_result
             )

@@ -7,13 +7,13 @@ from vkbotkit.objects import Library
 from vkbotkit.objects.enums import LogLevel, NameCases
 from vkbotkit.objects.callback import callback
 
-from assets.twitter.api import tweet
+from assets.x.api import create_post
 from assets.utils.sys_admin_tools import SysAdminTools
 
 from .filters import (
-    TWBotAdminPost,
-    TWNotBotAdmin,
-    TWNoArgs
+    XBotAdminPost,
+    XNotBotAdmin,
+    XNoArgs
 )
 from .templates import (
     NO_ARGS_AT_COMMAND,
@@ -24,12 +24,12 @@ from .templates import (
 )
 
 
-class TwitterPost(Library):
+class XPost(Library):
     """
-    Send tweet to X
+    Send post to X
     """
 
-    @callback(TWNoArgs)
+    @callback(XNoArgs)
     async def no_args(self, toolkit, package):
         """
         try to post without message text or attachments
@@ -42,7 +42,7 @@ class TwitterPost(Library):
 
         await toolkit.messages.send(package, response)
 
-    @callback(TWNotBotAdmin)
+    @callback(XNotBotAdmin)
     async def unknown_user(self, toolkit, package):
         """
         User has no bot-admin rights
@@ -53,26 +53,26 @@ class TwitterPost(Library):
 
         await toolkit.messages.send(package, response)
 
-    @callback(TWBotAdminPost)
+    @callback(XBotAdminPost)
     async def repost(self, toolkit, package):
         """
-        User with bot-admin rights sent command to tweet
+        User with bot-admin rights sent command to post
         """
 
         if not SysAdminTools.is_x_enabled:
             return await toolkit.messages.send(package, TABOO_REPOST)
 
         result_type = LogLevel.DEBUG
-        tweet_result = SUCCESS_REPOST_TWITTER
+        post_result = SUCCESS_REPOST_TWITTER
         channel_notification = " ".join(package.items[2:])
 
         try:
-            await tweet(channel_notification, package.attachments)
+            await create_post(channel_notification, package.attachments)
 
         except ReadTimeout as exception:
-            tweet_result = EXCEPTION_MESSAGE.format(exception=exception)
+            post_result = EXCEPTION_MESSAGE.format(exception=exception)
             result_type = LogLevel.ERROR
 
         finally:
-            toolkit.log(tweet_result, log_level=result_type)
-            await toolkit.messages.send(package, tweet_result)
+            toolkit.log(post_result, log_level=result_type)
+            await toolkit.messages.send(package, post_result)

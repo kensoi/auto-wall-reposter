@@ -30,8 +30,9 @@ class Client:
         """
         api link
         """
+        access_token = os.environ.get("TELEGRAM_ACCESS_TOKEN")
 
-        return "https://api.telegram.org/bot{access_token}/{method_name}"
+        return f"https://api.telegram.org/bot{access_token}/"
 
     async def post(self,
                    chat_id:typing.Union[str, int],
@@ -63,27 +64,18 @@ class Client:
 
             method_data[text_key] = message
 
-            method = self.api.format(
-                access_token = os.environ.get("TELEGRAM_BOT_TOKEN"),
-                method_name = method_name
-            )
+            method = self.api + method_name
 
             return await self.session.post(url=method, data=method_data)
 
-        method = self.api.format(
-            access_token = os.environ.get("TELEGRAM_BOT_TOKEN"),
-            method_name = "sendMediaGroup"
-        )
+        method = self.api + "sendMediaGroup"
         media_list = list(map(get_input_media_photo, photo_list))
 
         method_data["media"] = json.dumps(media_list)
 
         await self.session.post(url=method, data=method_data)
 
-        method = self.api.format(
-            access_token = os.environ.get("TELEGRAM_BOT_TOKEN"),
-            method_name = "sendMessage"
-        )
+        method = self.api + "sendMessage"
 
         method_data.pop("media")
         method_data["text"] = message
