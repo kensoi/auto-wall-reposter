@@ -26,7 +26,7 @@ class Reposter(Library):
     """
     Lib that reposts new post to X and Telegram
     """
-    def format_post_test(text):
+    def format_post_test(self, text):
         if len(text) > 128:
             return text[:128] + "..."
         return text
