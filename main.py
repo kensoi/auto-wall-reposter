@@ -46,7 +46,7 @@ async def start_polling():
     poll_marcel = parse_poll(marcel_bot, marcel_bot, "marcel", debug_mode)
     poll_tasks.append(poll_marcel)
 
-    if debug_mode:
+    if not debug_mode:
         poll_miuruwa = parse_poll(miuruwa_bot, marcel_bot, "miuruwa", False)
         poll_tasks.append(poll_miuruwa)
 
