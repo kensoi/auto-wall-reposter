@@ -20,11 +20,7 @@ class ShortLink(Library):
         package items limit error reaction
         """
 
-        bot_mention = package.items[0]
-        command = package.items[1]
-        response = SHORT_LINK_HELP.format(bot_mention = bot_mention, command = command)
-
-        await toolkit.messages.send(package, response)
+        await toolkit.messages.send(package, SHORT_LINK_HELP)
 
     @callback(ShortLinkArgs)
     async def short_response(self, toolkit, package):
