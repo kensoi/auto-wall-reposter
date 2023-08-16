@@ -82,14 +82,14 @@ async def create_post(message: str, attachments=None):
     """
 
     if not attachments:
-        return await run_in_executor(lambda _: client.create_post(text=message))
+        return await run_in_executor(lambda _: client.create_tweet(text=message))
 
     photo_attachments = list(filter(
         lambda item: item.type == "photo", attachments
     ))
 
     if len(photo_attachments) == 0:
-        return await run_in_executor(lambda _: client.create_post(text=message))
+        return await run_in_executor(lambda _: client.create_tweet(text=message))
 
     photo_attachments = photo_attachments[:min(len(photo_attachments),4)]
 
@@ -98,7 +98,7 @@ async def create_post(message: str, attachments=None):
     ])
 
     await run_in_executor(
-        lambda _: client.create_post(
+        lambda _: client.create_tweet(
             text=message,
             media_ids=media_ids
         )

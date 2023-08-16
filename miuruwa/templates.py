@@ -4,10 +4,11 @@ Copyright 2023 kensoi
 
 
 VK_CHAT_NOTIFICATION = """
-Зайкинсы!! В группе новый пост @all
+СОЛНЫШКИ МОИ!! (￢‿￢ )
+В группе новый пост @all
 """
 TELEGRAM_CHANNEL_NOTIFICATION = """
-📢 Внимание всем! В группе новый пост! ━━(￣ー￣*|||━━
+📢 АХТУНГ!11!1 В группе новый пост! °˖✧◝(⁰▿⁰)◜✧˖°
 {post_link}
 """
 TELEGRAM_CHANNEL_NOTIFICATION_DONUT = """
