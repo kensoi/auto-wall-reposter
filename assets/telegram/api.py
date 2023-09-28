@@ -101,7 +101,7 @@ async def get_photo_url(photo):
 
     return max(photo.photo.sizes, key=lambda photo: photo.height).url
 
-async def post_message(message: typing.Optional[str]=None, attachments: typing.Optional[list]=None):
+async def post_on_telegram(message: typing.Optional[str]=None, attachments: typing.Optional[list]=None):
     """Posts message on telegram channel that is specified by .env. 
 
     ### Args:

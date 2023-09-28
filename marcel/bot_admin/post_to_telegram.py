@@ -10,7 +10,7 @@ from vkbotkit.objects import Library
 from vkbotkit.objects.enums import LogLevel, NameCases
 from vkbotkit.objects.callback import callback
 
-from assets.telegram.api import post_message
+from assets.telegram.api import post_on_telegram
 from assets.utils.sys_admin_tools import SysAdminTools
 
 from .filters import (
@@ -69,7 +69,7 @@ class TelegramPost(Library):
         send_result = SUCCESS_REPOST_TELEGRAM.format(channel_id = channel_id)
 
         try:
-            await post_message(channel_notification, package.attachments)
+            await post_on_telegram(channel_notification, package.attachments)
 
         except ClientResponseError as exception:
             send_result = EXCEPTION_MESSAGE.format(exception=exception )

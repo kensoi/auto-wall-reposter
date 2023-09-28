@@ -8,8 +8,8 @@ from vkbotkit.objects.enums import LogLevel
 from vkbotkit.objects.callback import callback
 from vkbotkit.utils import gen_random
 
-from assets.telegram.api import post_message
-from assets.x.api import create_post
+from assets.telegram.api import post_on_telegram
+from assets.x.api import post_on_x
 from assets.utils.sys_admin_tools import SysAdminTools
 
 from .filters import NewPost
@@ -26,10 +26,6 @@ class Reposter(Library):
     """
     Lib that reposts new post to X and Telegram
     """
-    def format_post_test(self, text):
-        if len(text) > 128:
-            return text[:128] + "..."
-        return text
 
     @callback(NewPost)
     async def repost(self, toolkit, package):
@@ -37,18 +33,20 @@ class Reposter(Library):
         Repost handler
         """
 
-        post_result = SUCCESS_REPOST
         result_type = LogLevel.DEBUG
 
         post_id = f"wall{package.owner_id}_{package.id}"
         post_link = f"https://vk.com/{post_id}"
 
+        post_result = SUCCESS_REPOST.format(
+            post_original = post_link,
+            post_text = package.text
+        )
         notification = TELEGRAM_CHANNEL_NOTIFICATION.format(post_link=post_link)
 
         if package.donut.is_donut:
             notification = TELEGRAM_CHANNEL_NOTIFICATION_DONUT.format(
-                post_link=post_link,
-                description=self.format_post_test(package.text)
+                post_link=post_link
             )
 
         try:
@@ -60,10 +58,10 @@ class Reposter(Library):
             )
 
             if SysAdminTools.is_x_enabled and not package.donut.is_donut:
-                await create_post(package.text, package.attachments)
+                await post_on_x(package.text, package.attachments)
 
             if SysAdminTools.is_telegram_enabled:
-                await post_message(notification.format(post_link=post_link))
+                await post_on_telegram(notification.format(post_link=post_link))
 
         except ReadTimeout as exception:
             post_result = EXCEPTION_MESSAGE.format(exception=exception)
@@ -74,5 +72,5 @@ class Reposter(Library):
             await toolkit.api.messages.send(
                 random_id = gen_random(),
                 peer_id = SysAdminTools.log_hub,
-                message = post_result
+                message = post_result,
             )

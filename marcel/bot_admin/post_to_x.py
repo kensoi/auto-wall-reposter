@@ -7,7 +7,7 @@ from vkbotkit.objects import Library
 from vkbotkit.objects.enums import LogLevel, NameCases
 from vkbotkit.objects.callback import callback
 
-from assets.x.api import create_post
+from assets.x.api import post_on_x
 from assets.utils.sys_admin_tools import SysAdminTools
 
 from .filters import (
@@ -67,7 +67,7 @@ class XPost(Library):
         channel_notification = " ".join(package.items[2:])
 
         try:
-            await create_post(channel_notification, package.attachments)
+            await post_on_x(channel_notification, package.attachments)
 
         except ReadTimeout as exception:
             post_result = EXCEPTION_MESSAGE.format(exception=exception)

@@ -76,7 +76,7 @@ async def upload_photo(attachment):
 
     return media_object.media_id
 
-async def create_post(message: str, attachments=None):
+async def post_on_x(message: str, attachments=None):
     """
     create post on X
     """
