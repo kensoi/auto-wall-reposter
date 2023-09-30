@@ -60,7 +60,7 @@ class Reposter(Library):
 
         response = await self.x_post_edit_suggest(toolkit, post_id)
 
-        post_on_x(response or package.text, package.attachments)
+        await post_on_x(response or package.text, package.attachments)
 
     async def x_post_edit_suggest(self, toolkit, post_id):
         """
