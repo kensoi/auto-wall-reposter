@@ -14,6 +14,7 @@ class SysAdminTools:
     """
     list: list
     log_hub: int
+    beta_hub: int
     repost_hub: int
     is_x_enabled: bool = False
     is_telegram_enabled: bool = False
