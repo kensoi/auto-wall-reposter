@@ -14,8 +14,8 @@
 
 ## Полезные ссылки
 
-* [vkbotkit](https://github.com/miuruwa/vkbotkit/tree/v1.2)
-* [template](https://github.com/miuruwa/template/tree/v1.2)
+* [vkbotkit](https://github.com/miuruwa/vkbotkit/)
+* [template](https://github.com/miuruwa/vkbotkit-template/)
 
 # Установка и настройка бота в вашем сообществе ВКонтакте  
 
@@ -48,7 +48,6 @@
 ```bash
 git clone https://github.com/your_name/your_bot.git
 cd your_bot
-git checkout v1.2
 pip install -r requirements.txt
 ```
 
