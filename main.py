@@ -1,5 +1,5 @@
 """
-Copyright 2022 kensoi
+copyright 2025 miuruwa
 """
 
 import asyncio
@@ -14,41 +14,44 @@ debug_mode = os.environ.get('DEBUG_MODE') == "True" or "-d" in sys.argv
 from utils.flask import keep_alive
 from utils.bot import create_bot, parse_poll
 
+
 async def create_marcel_bot():
     """
     marcel bot
     """
 
     marcel_access_token = os.environ.get('VK_MARCEL_ACCESS_TOKEN')
-    marcel_bot_id = int(os.environ.get('MARCEL_BOT_ID'))
+    marcel_bot_id = int(os.environ.get('MARCEL_BOT_ID')) # type: ignore
     marcel_mentions = os.environ.get("BOT_MENTIONS", "").split(" ")
 
     return create_bot(marcel_access_token, marcel_bot_id, debug_mode, marcel_mentions)
 
-async def create_miuruwa_bot():
+
+async def create_repost_bot():
     """
-    miuruwa bot
+    social media repost module
     """
 
-    miuruwa_access_token = os.environ.get('VK_WALL_ACCESS_TOKEN')
-    miuruwa_bot_id = int(os.environ.get('WALL_COMMUNITY_ID'))
+    repost_access_token = os.environ.get('VK_WALL_ACCESS_TOKEN')
+    repost_bot_id = int(os.environ.get('WALL_COMMUNITY_ID')) # type: ignore
 
-    return create_bot(miuruwa_access_token, miuruwa_bot_id, debug_mode)
+    return create_bot(repost_access_token, repost_bot_id, debug_mode)
+
 
 async def start_polling():
     """
     parse for packages from server while bot.toolkit.is_polling
     """
     poll_tasks = []
-    marcel_bot = await create_marcel_bot()
-    miuruwa_bot = await create_miuruwa_bot()
+    general_bot = await create_marcel_bot()
+    reposter_bot = await create_repost_bot()
 
-    poll_marcel = parse_poll(marcel_bot, marcel_bot, "marcel", debug_mode)
-    poll_tasks.append(poll_marcel)
+    poll_general = parse_poll(reposter_bot, reposter_bot, "general_lib", debug_mode)
+    poll_tasks.append(poll_general)
 
     if not debug_mode:
-        poll_miuruwa = parse_poll(miuruwa_bot, marcel_bot, "miuruwa", False)
-        poll_tasks.append(poll_miuruwa)
+        poll_reposter = parse_poll(general_bot, reposter_bot, "content_repost", False)
+        poll_tasks.append(poll_reposter)
 
     # Параллельное отслеживание событий в обоих группах.
 

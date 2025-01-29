@@ -1,5 +1,5 @@
 """
-Copyright 2023 kensoi
+copyright 2025 miuruwa
 """
 
 import inspect

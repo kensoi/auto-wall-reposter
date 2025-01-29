@@ -1,4 +1,4 @@
-https://github.com/kensoi/vkbotkit/tarball/v1.3
+https://github.com/miuruwa/vkbotkit/tarball/v1.3
 python-dotenv
 flask
 tweepy
